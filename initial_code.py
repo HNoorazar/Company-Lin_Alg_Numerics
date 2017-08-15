@@ -64,3 +64,44 @@ def second_centre_deriv(grids, func):
         second_derivatives[0, deriv_counter-1] = numerator / (step_size**2)
     return second_derivatives
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
