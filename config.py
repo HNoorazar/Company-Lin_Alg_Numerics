@@ -16,7 +16,7 @@ class staticParameters:
         self.final_t = 0. # Final time
         self.deta_t = 0. # time step size
         self.safety_tau = 0. # Safety factor for time step size control \tau
-        
+
         # Pressure-iteration data
         self.iteration_max = 0 # Maximal number of pressure iterations in one time step
         self.iteration_count = 0  # SOR iteration counter [Do we need to remove this?]
@@ -83,8 +83,8 @@ class staticParameters:
         self.ylength = config.getfloat('parameters', 'ylength') # 2
         self.imax = config.getfloat('parameters', 'imax')       # 3
         self.jmax = config.getfloat('parameters', 'jmax')       # 4
-        self.delta_x = config.getfloat('parameters', 'delta_x') # 5
-        self.delta_y = config.getfloat('parameters', 'delta_y') # 6
+        self.delta_x = config.getfloat('parameters', 'xlength') / config.getfloat('parameters', 'imax') # 5
+        self.delta_y = config.getfloat('parameters', 'ylength') / config.getfloat('parameters', 'jmax') # 6
         self.current_time = config.getint('parameters', 'current_time') # 7
         self.final_t = config.getint('parameters', 'final_t') # 8
         self.deta_t = config.getint('parameters', 'deta_t')   # 9
@@ -94,6 +94,14 @@ class staticParameters:
         self.res_norm = config.getint('parameters', 'res_norm')       # 13
         self.stop_toler = config.getint('parameters', 'stop_toler')   # 14
         self.relax_param = config.getint('parameters', 'relax_param') # 15
-        self.gamma = config.getint('parameters', 'gamma')             # 16                       
+        self.gamma = config.getint('parameters', 'gamma')             # 16
+
         
-        
+
+
+
+
+
+
+
+
