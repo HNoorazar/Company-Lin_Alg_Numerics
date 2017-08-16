@@ -80,9 +80,9 @@ def initialize_vel_press(imax, jmax, initial_x_vel, initial_y_vel, initial_press
     #         initial_pressure is initial initial pressure
     # output: velocities in x- and y- directions and pressure on all
     #         interior grid points.
-    x_velocities = initial_x_vel * np.ones(imax-1, jmax-1)
-    y_velocities = initial_y_vel * np.ones(imax-1, jmax-1)
-    pressures = initial_pressure * np.ones(imax-1, jmax-1)
+    x_velocities = initial_x_vel * np.ones(imax+2, jmax+2)
+    y_velocities = initial_y_vel * np.ones(imax+2, jmax+2)
+    pressures = initial_pressure * np.ones(imax+2, jmax+2)
     return x_velocities, y_velocities, pressures
     
 """
