@@ -94,7 +94,9 @@ In case of neg- ative tau
 the stepsize read in READ-PARAMETER 
 is to be use
 """
-def compute_time_step(imax, jmax, delx, dely, x_velocities, y_velocities, Reynolds, safety_tau):
+def compute_time_step(config,
+                      x_velocities, y_velocities, 
+                      Reynolds):
     # input:  imax is number of interior cells in x-direction
     #         jmax is number of interior cells in y-direction
     #         delx is step sizes in x-direction
@@ -104,12 +106,14 @@ def compute_time_step(imax, jmax, delx, dely, x_velocities, y_velocities, Reynol
     #         Reynolds is Reynolds number.
     #         safety_tau is safety factor for time step size control tau.
     
-    # output: The stepsize delt for the next time step is calculated.
-    first_element = np.reciprocal(1./(delx ** 2) + 1./(dely ** 2)) * (Reynolds / 2.)
-    second_element = delx / np.abs(np.max(x_velocities))
-    third_element = dely / np.abs(np.max(y_velocities)) 
-    delt = safety_tau * np.minimum(first_element, second_element, third_element)
-    
+    # output: The stepsize delta_t for the next time step is calculated.
+    if config.safety_tau >= 0:
+        first_element = np.reciprocal(1./(config.delx ** 2) + 1./(config.dely ** 2)) * (Reynolds / 2.)
+        second_element = config.delx / np.abs(np.max(x_velocities))
+        third_element = config.dely / np.abs(np.max(y_velocities)) 
+        delta_t = config.safety_tau * np.minimum(first_element, second_element, third_element)
+    else:
+        delta_t = config.deta_t
     
     
 
