@@ -72,7 +72,7 @@ Problem 2 of page 43 of the book.
 Initialize the velocities and pressures
 at interior grid points:
 """
-def initialize_vel_press(imax, jmax, initial_x_vel, initial_y_vel, initial_pressure):
+def initialize_vel_press(config, initial_x_vel, initial_y_vel, initial_pressure):
     # input:  imax is number of interior cells in x-direction
     #         jmax is number of interior cells in y-direction
     #         initial_x_vel is initial velocity in x-direction
@@ -80,9 +80,9 @@ def initialize_vel_press(imax, jmax, initial_x_vel, initial_y_vel, initial_press
     #         initial_pressure is initial initial pressure
     # output: velocities in x- and y- directions and pressure on all
     #         interior grid points.
-    x_velocities = initial_x_vel * np.ones(imax+2, jmax+2)
-    y_velocities = initial_y_vel * np.ones(imax+2, jmax+2)
-    pressures = initial_pressure * np.ones(imax+2, jmax+2)
+    x_velocities = initial_x_vel * np.ones(config.imax+2, config.jmax+2)
+    y_velocities = initial_y_vel * np.ones(config.imax+2, config.jmax+2)
+    pressures = initial_pressure * np.ones(config.imax+2, config.jmax+2)
     return x_velocities, y_velocities, pressures
     
 """
