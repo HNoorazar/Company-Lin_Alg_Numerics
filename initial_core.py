@@ -82,7 +82,8 @@ def initialize_vel_press(config, initial_x_vel, initial_y_vel, initial_pressure)
     #         interior grid points.
     x_velocities = initial_x_vel * np.ones(config.imax-1, config.jmax-1)
     y_velocities = initial_y_vel * np.ones(config.imax-1, config.jmax-1)
-    pressures = initial_pressure * np.ones(config.imax-1, config.jmax-1)
+    pressures = initial_pressure * np.ones(config.imax-1
+    , config.jmax-1)
     return x_velocities, y_velocities, pressures
     
 """
@@ -114,6 +115,7 @@ def compute_time_step(config,
         delta_t = config.safety_tau * np.minimum(first_element, second_element, third_element)
     else:
         delta_t = config.deta_t
+    return delta_t    
     
     
 
