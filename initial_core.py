@@ -109,9 +109,9 @@ def compute_time_step(config,
     
     # output: The stepsize delta_t for the next time step is calculated.
     if config.safety_tau >= 0:
-        first_element = np.reciprocal(1./(config.delx ** 2) + 1./(config.dely ** 2)) * (Reynolds / 2.)
-        second_element = config.delx / np.abs(np.max(x_velocities))
-        third_element = config.dely / np.abs(np.max(y_velocities)) 
+        first_element = np.reciprocal(1./(config.delta_x ** 2) + 1./(config.delta_y ** 2)) * (Reynolds / 2.)
+        second_element = config.delta_x / np.abs(np.max(x_velocities))
+        third_element = config.delta_y / np.abs(np.max(y_velocities)) 
         delta_t = config.safety_tau * np.minimum(first_element, second_element, third_element)
     else:
         delta_t = config.deta_t
