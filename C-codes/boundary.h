@@ -3,6 +3,3 @@ void SETBCOND(REAL **U,REAL **V,REAL **P,REAL **TEMP,int **FLAG,
 
 void SETSPECBCOND(char* problem,REAL **U,REAL **V,REAL **P,REAL **TEMP,
 		  int imax,int jmax,REAL UI, REAL VI);
-
-
-

@@ -53,3 +53,12 @@ class SomeOtherClass:
 
 c = SomeOtherClass.foo(5)
 print c
+
+
+a = 1
+if a == 0x000f:
+   print "yes"
+else:
+   print "no"
+print 0x000f
+

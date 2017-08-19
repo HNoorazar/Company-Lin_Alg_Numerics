@@ -113,63 +113,63 @@ void SETBCOND(REAL **U,REAL **V,REAL **P,REAL **TEMP,int **FLAG,
 	 {
           case B_N:  { 
 		       V[i][j]   = 0.0;
-                       U[i][j]   = -U[i][j+1];
-                       U[i-1][j] = -U[i-1][j+1];
-                       TEMP[i][j] = TEMP[i][j+1];
-                       break;
+               U[i][j]   = -U[i][j+1];
+               U[i-1][j] = -U[i-1][j+1];
+               TEMP[i][j] = TEMP[i][j+1];
+               break;
 	             }
           case B_O:  { 
 		       U[i][j]   = 0.0;
-                       V[i][j]   = -V[i+1][j];
-                       V[i][j-1] = -V[i+1][j-1];
-                       TEMP[i][j] = TEMP[i+1][j];
-                       break;
-	             }
+               V[i][j]   = -V[i+1][j];
+               V[i][j-1] = -V[i+1][j-1];
+               TEMP[i][j] = TEMP[i+1][j];
+               break;
+	                 }
           case B_S:  { 
 		       V[i][j-1] = 0.0;
-                       U[i][j]   = -U[i][j-1];
-                       U[i-1][j] = -U[i-1][j-1];
-                       TEMP[i][j] = TEMP[i][j-1];
-                       break;
+               U[i][j]   = -U[i][j-1];
+               U[i-1][j] = -U[i-1][j-1];
+               TEMP[i][j] = TEMP[i][j-1];
+               break;
 	             }
           case B_W:  { 
 		       U[i-1][j] = 0.0;
-                       V[i][j]   = -V[i-1][j];
-                       V[i][j-1] = -V[i-1][j-1];
-                       TEMP[i][j] = TEMP[i-1][j];
-                       break;
+               V[i][j]   = -V[i-1][j];
+               V[i][j-1] = -V[i-1][j-1];
+               TEMP[i][j] = TEMP[i-1][j];
+               break;
 	             }
           case B_NO: { 
 		       V[i][j]   = 0.0;
-                       U[i][j]   = 0.0;
-                       V[i][j-1] = -V[i+1][j-1];
-                       U[i-1][j] = -U[i-1][j+1];
-                       TEMP[i][j] = 0.5*(TEMP[i][j+1]+TEMP[i+1][j]);
-                       break;
+               U[i][j]   = 0.0;
+               V[i][j-1] = -V[i+1][j-1];
+               U[i-1][j] = -U[i-1][j+1];
+               TEMP[i][j] = 0.5*(TEMP[i][j+1]+TEMP[i+1][j]);
+               break;
 	             }
           case B_SO: { 
 		       V[i][j-1] = 0.0;
-                       U[i][j]   = 0.0;
-                       V[i][j]   = -V[i+1][j];
-                       U[i-1][j] = -U[i-1][j-1];
-                       TEMP[i][j] = 0.5*(TEMP[i][j-1]+TEMP[i+1][j]);
-                       break;
+               U[i][j]   = 0.0;
+               V[i][j]   = -V[i+1][j];
+               U[i-1][j] = -U[i-1][j-1];
+               TEMP[i][j] = 0.5*(TEMP[i][j-1]+TEMP[i+1][j]);
+               break;
                      }
           case B_SW: { 
 		       V[i][j-1] = 0.0;
-                       U[i-1][j] = 0.0;
-                       V[i][j]   = -V[i-1][j];
-                       U[i][j]   = -U[i][j-1];
-                       TEMP[i][j] = 0.5*(TEMP[i][j-1]+TEMP[i-1][j]);
-                       break;
+               U[i-1][j] = 0.0;
+               V[i][j]   = -V[i-1][j];
+               U[i][j]   = -U[i][j-1];
+               TEMP[i][j] = 0.5*(TEMP[i][j-1]+TEMP[i-1][j]);
+               break;
 	             }
           case B_NW: { 
 		       V[i][j]   = 0.0;
-                       U[i-1][j] = 0.0;
-                       V[i][j-1] = -V[i-1][j-1];
-                       U[i][j]   = -U[i][j+1];
-                       TEMP[i][j] = 0.5*(TEMP[i][j+1]+TEMP[i-1][j]);
-                       break;
+               U[i-1][j] = 0.0;
+               V[i][j-1] = -V[i-1][j-1];
+               U[i][j]   = -U[i][j+1];
+               TEMP[i][j] = 0.5*(TEMP[i][j+1]+TEMP[i-1][j]);
+               break;
 	             }
 	  default : break;
 	 }

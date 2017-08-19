@@ -132,7 +132,7 @@ def compute_time_step(config,
 """
 # I have to look into this and vectorize it, if possible!
 # this is just copied from C++ code!
-def set_boun_cond(state, config, temp, wW, wE, wN, wS):
+def set_boun_cond(state, config, temp, flag, wW, wE, wN, wS):
     # Left and right boundary
     for jj in xrange(0, config.jmax+2):
         if wW == 1:
@@ -195,6 +195,13 @@ def set_boun_cond(state, config, temp, wW, wE, wN, wS):
             state.x_velocities[ii, 1] = state.x_velocities[ii, config.jmax]
             state.pressures[ii, 1] = state.pressures[ii, jmax]
         temp[ii, jmax+1] = temp[ii, jmax]
+#  /* setting the boundary values at inner obstacle cells */
+#  /*                  (only no-slip)                     */
+#  /*-----------------------------------------------------*/
+    for ii in xrange(0, imax+1):
+        for jj in xrange(0, jmax+1):
+            if flag[ii, jj] and 
+            
 
 
 
