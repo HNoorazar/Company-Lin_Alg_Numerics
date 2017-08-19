@@ -119,6 +119,82 @@ def compute_time_step(config,
     
     
 
+"""
+-----------------------------------------------------------------
+ Setting the boundary conditions at the boundary strip.          
+ The flags wW,wE,wN, and wS can have the values:                 
+ 1 = slip               2 = no-slip                              
+ 3 = outflow            4 = periodic                             
+ Moreover, no-slip conditions are set at internal obstacle cells 
+ by default.                                                     
+ For temperature, adiabatic boundary conditions are set.         
+-----------------------------------------------------------------
+"""
+# I have to look into this and vectorize it, if possible!
+# this is just copied from C++ code!
+def set_boun_cond(state, config, temp, wW, wE, wN, wS):
+    # Left and right boundary
+    for jj in xrange(0, config.jmax+2):
+        if wW == 1:
+            state.x_velocities[0, jj] = 0.
+            state.y_velocities[0, jj] = state.y_velocities[1, jj]
+        elif wW == 2:
+            state.x_velocities[0, jj] = 0.
+            state.y_velocities[0, jj] = -state.y_velocities[1, jj]
+        elif wW == 3:
+            state.x_velocities[0, jj] = state.x_velocities[1, jj]
+            state.y_velocities[0, jj] = state.y_velocities[1, jj]
+        elif wW == 4:
+            state.x_velocities[0, jj] = state.x_velocities[config.imax - 1, jj]
+            state.y_velocities[0, jj] = state.y_velocities[config.imax - 1, jj]
+            state.y_velocities[1, jj] = state.y_velocities[config.imax, jj]            
+            state.pressures[1, jj] = state.pressures[imax, jj]
+        temp[0, jj] = temp[1, jj]
+        
+        if wE == 1:
+            state.x_velocities[config.imax, jj] = 0.
+            state.y_velocities[config.imax+1, jj] = state.y_velocities[config.imax, jj]
+        elif wE == 2:
+            state.x_velocities[config.imax, jj] = 0.
+            state.y_velocities[config.imax+1, jj] = -state.y_velocities[config.imax, jj]
+        elif wE == 3:
+            state.x_velocities[config.imax, jj] = state.x_velocities[config.imax-1, jj]
+            state.y_velocities[config.imax+1, jj] = state.y_velocities[config.imax, jj]
+        elif wE == 4:
+            state.x_velocities[config.imax, jj] = state.x_velocities[1, jj]
+            state.y_velocities[config.imax+1, jj] = state.y_velocities[2, jj]
+        temp[config.imax+1, jj] = temp[config.imax, jj]
+    # Northern and Southern boundary conditions
+    for ii in xrange(0, config.imax+2):
+       if wN == 1:
+           state.y_velocities[ii, config.jmax] = 0.
+           state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, config.jmax]
+        if wN == 2:
+           state.y_velocities[ii, config.jmax] = 0.
+           state.x_velocities[ii, config.jmax+1] = -state.x_velocities[ii, config.jmax]
+        if wN == 3:
+            state.y_velocities[ii, config.jmax] = state.y_velocities[ii, config.jmax-1]
+            state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, config.jmax]
+        if wN == 4:
+            state.y_velocities[ii, config.jmax] = state.y_velocities[ii, 1]
+            state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, 2]
+        temp[ii,0] = temp[ii,1]
+        
+        if wS == 1:
+            state.y_velocities[ii, 0] = 0.
+            state.x_velocities[ii, 0] = state.x_velocities[ii, 1]
+        elif wS == 2:
+            state.y_velocities[ii, 0] = 0.
+            state.x_velocities[ii, 0] = -state.x_velocities[ii, 1]
+        elif wS == 3:
+            state.y_velocities[ii, 0] = state.y_velocities[ii, 1]
+            state.x_velocities[ii, 0] = state.x_velocities[ii, 1]
+        elif wS == 4:
+            state.y_velocities[ii, 0] = state.y_velocities[ii, config.jmax-1]
+            state.x_velocities[ii, 0] = state.x_velocities[ii, config.jmax-1]
+            state.x_velocities[ii, 1] = state.x_velocities[ii, config.jmax]
+            state.pressures[ii, 1] = state.pressures[ii, jmax]
+        temp[ii, jmax+1] = temp[ii, jmax]
 
 
 
@@ -135,20 +211,4 @@ def compute_time_step(config,
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    

@@ -13,6 +13,7 @@
 /*-----------------------------------------------------------------*/
 void SETBCOND(REAL **U,REAL **V,REAL **P,REAL **TEMP,int **FLAG,
 	      int imax,int jmax,int wW,int wE,int wN,int wS)
+
 {
   int i,j;
 
