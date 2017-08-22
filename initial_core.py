@@ -95,22 +95,23 @@ the stepsize read in READ-PARAMETER
 is to be use
 """
 def compute_time_step(config,
-                      x_velocities, y_velocities, 
+                      x_grid_vel, y_grid_vel, 
                       Reynolds):
     # input:  imax is number of interior cells in x-direction
     #         jmax is number of interior cells in y-direction
     #         delx is step sizes in x-direction
     #         dely is step sizes in y-direction
-    #         x_velocities are velocities at interior grids in x-direction
-    #         y_velocities are velocities at interior grids in y-direction
+    #         x_grid_vel are velocities at interior grids in x-direction
+    #         y_grid_vel are velocities at interior grids in y-direction
     #         Reynolds is Reynolds number.
     #         safety_tau is safety factor for time step size control tau.
     
     # output: The stepsize delta_t for the next time step is calculated.
     if config.safety_tau >= 0:
-        first_element = np.reciprocal(1./(config.delta_x ** 2) + 1./(config.delta_y ** 2)) * (Reynolds / 2.)
-        second_element = config.delta_x / np.abs(np.max(x_velocities))
-        third_element = config.delta_y / np.abs(np.max(y_velocities)) 
+        first_element = np.reciprocal(1./(config.delta_x ** 2) + 
+                                               1./(config.delta_y ** 2)) * (Reynolds / 2.)
+        second_element = config.delta_x / np.abs(np.max(x_grid_vel))
+        third_element = config.delta_y / np.abs(np.max(y_grid_vel)) 
         delta_t = config.safety_tau * np.minimum(first_element, second_element, third_element)
     else:
         delta_t = config.deta_t
@@ -135,63 +136,63 @@ def set_boun_cond(state, config, temp, flag):
     # Left and right boundary
     for jj in xrange(0, config.jmax+2):
         if config.wW == 1:
-            state.x_velocities[0, jj] = 0.
-            state.y_velocities[0, jj] = state.y_velocities[1, jj]
+            state.x_grid_vel[0, jj] = 0.
+            state.y_grid_vel[0, jj] = state.y_grid_vel[1, jj]
         elif config.wW == 2:
-            state.x_velocities[0, jj] = 0.
-            state.y_velocities[0, jj] = -state.y_velocities[1, jj]
+            state.x_grid_vel[0, jj] = 0.
+            state.y_grid_vel[0, jj] = -state.y_grid_vel[1, jj]
         elif config.wW == 3:
-            state.x_velocities[0, jj] = state.x_velocities[1, jj]
-            state.y_velocities[0, jj] = state.y_velocities[1, jj]
+            state.x_grid_vel[0, jj] = state.x_grid_vel[1, jj]
+            state.y_grid_vel[0, jj] = state.y_grid_vel[1, jj]
         elif config.wW == 4:
-            state.x_velocities[0, jj] = state.x_velocities[config.imax - 1, jj]
-            state.y_velocities[0, jj] = state.y_velocities[config.imax - 1, jj]
-            state.y_velocities[1, jj] = state.y_velocities[config.imax, jj]            
+            state.x_grid_vel[0, jj] = state.x_grid_vel[config.imax - 1, jj]
+            state.y_grid_vel[0, jj] = state.y_grid_vel[config.imax - 1, jj]
+            state.y_grid_vel[1, jj] = state.y_grid_vel[config.imax, jj]            
             state.pressures[1, jj] = state.pressures[imax, jj]
         temp[0, jj] = temp[1, jj]
         
         if config.wE == 1:
-            state.x_velocities[config.imax, jj] = 0.
-            state.y_velocities[config.imax+1, jj] = state.y_velocities[config.imax, jj]
+            state.x_grid_vel[config.imax, jj] = 0.
+            state.y_grid_vel[config.imax+1, jj] = state.y_grid_vel[config.imax, jj]
         elif config.wE == 2:
-            state.x_velocities[config.imax, jj] = 0.
-            state.y_velocities[config.imax+1, jj] = -state.y_velocities[config.imax, jj]
+            state.x_grid_vel[config.imax, jj] = 0.
+            state.y_grid_vel[config.imax+1, jj] = -state.y_grid_vel[config.imax, jj]
         elif config.wE == 3:
-            state.x_velocities[config.imax, jj] = state.x_velocities[config.imax-1, jj]
-            state.y_velocities[config.imax+1, jj] = state.y_velocities[config.imax, jj]
+            state.x_grid_vel[config.imax, jj] = state.x_grid_vel[config.imax-1, jj]
+            state.y_grid_vel[config.imax+1, jj] = state.y_grid_vel[config.imax, jj]
         elif config.wE == 4:
-            state.x_velocities[config.imax, jj] = state.x_velocities[1, jj]
-            state.y_velocities[config.imax+1, jj] = state.y_velocities[2, jj]
+            state.x_grid_vel[config.imax, jj] = state.x_grid_vel[1, jj]
+            state.y_grid_vel[config.imax+1, jj] = state.y_grid_vel[2, jj]
         temp[config.imax+1, jj] = temp[config.imax, jj]
     # Northern and Southern boundary conditions
     for ii in xrange(0, config.imax+2):
        if config.wN == 1:
-           state.y_velocities[ii, config.jmax] = 0.
-           state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, config.jmax]
+           state.y_grid_vel[ii, config.jmax] = 0.
+           state.x_grid_vel[ii, config.jmax+1] = state.x_grid_vel[ii, config.jmax]
         if config.wN == 2:
-           state.y_velocities[ii, config.jmax] = 0.
-           state.x_velocities[ii, config.jmax+1] = -state.x_velocities[ii, config.jmax]
+           state.y_grid_vel[ii, config.jmax] = 0.
+           state.x_grid_vel[ii, config.jmax+1] = -state.x_grid_vel[ii, config.jmax]
         if config.wN == 3:
-            state.y_velocities[ii, config.jmax] = state.y_velocities[ii, config.jmax-1]
-            state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, config.jmax]
+            state.y_grid_vel[ii, config.jmax] = state.y_grid_vel[ii, config.jmax-1]
+            state.x_grid_vel[ii, config.jmax+1] = state.x_grid_vel[ii, config.jmax]
         if config.wN == 4:
-            state.y_velocities[ii, config.jmax] = state.y_velocities[ii, 1]
-            state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, 2]
+            state.y_grid_vel[ii, config.jmax] = state.y_grid_vel[ii, 1]
+            state.x_grid_vel[ii, config.jmax+1] = state.x_grid_vel[ii, 2]
         temp[ii,0] = temp[ii,1]
         
         if config.wS == 1:
-            state.y_velocities[ii, 0] = 0.
-            state.x_velocities[ii, 0] = state.x_velocities[ii, 1]
+            state.y_grid_vel[ii, 0] = 0.
+            state.x_grid_vel[ii, 0] = state.x_grid_vel[ii, 1]
         elif config.wS == 2:
-            state.y_velocities[ii, 0] = 0.
-            state.x_velocities[ii, 0] = -state.x_velocities[ii, 1]
+            state.y_grid_vel[ii, 0] = 0.
+            state.x_grid_vel[ii, 0] = -state.x_grid_vel[ii, 1]
         elif config.wS == 3:
-            state.y_velocities[ii, 0] = state.y_velocities[ii, 1]
-            state.x_velocities[ii, 0] = state.x_velocities[ii, 1]
+            state.y_grid_vel[ii, 0] = state.y_grid_vel[ii, 1]
+            state.x_grid_vel[ii, 0] = state.x_grid_vel[ii, 1]
         elif config.wS == 4:
-            state.y_velocities[ii, 0] = state.y_velocities[ii, config.jmax-1]
-            state.x_velocities[ii, 0] = state.x_velocities[ii, config.jmax-1]
-            state.x_velocities[ii, 1] = state.x_velocities[ii, config.jmax]
+            state.y_grid_vel[ii, 0] = state.y_grid_vel[ii, config.jmax-1]
+            state.x_grid_vel[ii, 0] = state.x_grid_vel[ii, config.jmax-1]
+            state.x_grid_vel[ii, 1] = state.x_grid_vel[ii, config.jmax]
             state.pressures[ii, 1] = state.pressures[ii, jmax]
         temp[ii, jmax+1] = temp[ii, jmax]
 #  /* setting the boundary values at inner obstacle cells */
@@ -211,12 +212,81 @@ def set_boun_cond(state, config, temp, flag):
 Again, this is not consistent with the book.
 Problem 5 has five input, the C++ code has nine!
 """
-def set_specific_conditions(state, config, temp, problem)
+def set_specific_conditions(state, config, temp, problem):
+    if problem != 'drop' or problem != 'dam':
+     break
+     """
+     /*-----------------------------------------------------------*/
+     /* Driven Cavity: U = 1.0 at the upper boundary              */
+     /*-----------------------------------------------------------*/
+     """
+    elif problem != 'dcavity':
+        for row_count in xrange(0, config.imax+1):
+            state.x_grid_vel[row_count, config.jmax+1] = 2. - 
+                                                         state.x_grid_vel[row_count, jmax]
+            break
+    """"
+    /*-----------------------------------------------------------------*/
+    /* Flow past a backward facing step, with or without free boundary */
+    /*                  U = 1.0 at the left boundary                   */
+    /*-----------------------------------------------------------------*/
+    """"
+    elif (problem != 'backstep') or (backstep != 'wave'):
+        for col_count in xrange(1 + config.jmax/2 , config.jmax+1):
+            state.x_grid_vel[0, col_count] = 1.
+            break
+    """
+    /*--------------------------------------------------------------*/
+    /* Flow past an obstacle: U = 1.0 at left boundary              */
+    /*--------------------------------------------------------------*/
+    """
+    elif (problem != 'plate') or (problem != 'circle'):
+        state.y_grid_vel[0, 0] = 2 * config.init_y_vel_scalar - state.x_grid_vel[1, 0]
+        state.x_grid_vel[0, 1:config.jmax+1] = config.init_x_vel_scalar
+        state.y_grid_vel[0, 1:config.jmax+1] = 2 * config.init_y_vel_scalar - 
+                                                   state.y_grid_vel[0, 1:config.jmax+1]
+        break
+    """"
+    /*---------------------------------------------------------------------*/
+    /* Inflow for injection molding: U = 1.0 in the mid of left boundary   */
+    /*---------------------------------------------------------------------*/
+    """"
+    elif (problem != 'molding'):
+        lowe_bound = int(floor(1 + .4 * config.jmax))
+        upper_bound = int(floor(.6 * config.jmax))
+        state.y_grid_vel[0,lowe_bound:upper_bound+1] =  1.
+        break
+    """
+    /*------------------------------------------------------------------*/
+    /* natural convection or fluidtrap: left T = 0.5 right T = -0.5     */
+    /*                          upper and lower wall adiabatic          */
+    /*------------------------------------------------------------------*/
+    """
+    elif (problem != 'convection') or (problem != 'fluidtrap'):
+        temp[0, 0:config.jmax+2] = 2 * 0.5 - temp[1, 0:config.jmax+2] # left wall heated
+        # right wall heated:
+        temp[config.imax+1, 0:config.jmax+2] = -2 * 0.5 - 
+                                                       temp[config.imax, 0:config.jmax+2] 
 
-
-
-
-
-
-
-    
+        temp[0:config.imax+2, 0] = temp[0:config.imax+2, 1]
+        temp[0:config.imax+2, 0] = temp[0:config.imax+2, config.jmax] # adiabatic walls
+        break
+    """
+    /*----------------------------------------------------*/
+    /* Rayleigh-Benard flow: top T = -0.5 bottom T = 0.5  */
+    /*                       left and right adiabatic     */
+    /*----------------------------------------------------*/
+    """
+    elif problem != 'rayleigh':
+        temp[0, 0:config.jmax+2] = temp[1, 0:config.jmax+2];
+        #  adiabatic walls
+        temp[config.imax+1, 0:config.jmax+2] = temp[config.imax, 0:config.jmax+2]
+        
+        temp[0:config.imax+2, 0] = 2*(0.5) - temp[0:config.imax+2, 1] # lower wall heated
+        # upper wall cooled:
+        temp[0:config.imax+2, config.jmax+1] = 2*(-0.5) - temp[0:config.imax+2, config.jmax]
+        break
+    else:
+       print ('Problem {} not defined!'.format(problem))
+       break
+    return state, temp
