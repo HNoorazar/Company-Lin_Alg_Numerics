@@ -72,7 +72,7 @@ Problem 2 of page 43 of the book.
 Initialize the velocities and pressures
 at interior grid points:
 """
-def initialize_vel_press(config, initial_x_vel, initial_y_vel, initial_pressure):
+def initialize_grid_state(config, initial_x_vel, initial_y_vel, initial_pressure):
     # input:  imax is number of interior cells in x-direction
     #         jmax is number of interior cells in y-direction
     #         initial_x_vel is initial velocity in x-direction
@@ -80,11 +80,10 @@ def initialize_vel_press(config, initial_x_vel, initial_y_vel, initial_pressure)
     #         initial_pressure is initial initial pressure
     # output: velocities in x- and y- directions and pressure on all
     #         interior grid points.
-    x_velocities = initial_x_vel * np.ones(config.imax-1, config.jmax-1)
-    y_velocities = initial_y_vel * np.ones(config.imax-1, config.jmax-1)
-    pressures = initial_pressure * np.ones(config.imax-1
-    , config.jmax-1)
-    return x_velocities, y_velocities, pressures
+    init_grid_x_vel = initial_x_vel * np.ones(config.imax-1, config.jmax-1)
+    init_grid_y_vel = initial_y_vel * np.ones(config.imax-1, config.jmax-1)
+    init_grid_press = initial_pressure * np.ones(config.imax-1, config.jmax-1)
+    return init_grid_x_vel, init_grid_y_vel, init_grid_press
     
 """
 Problem 3 of page 43 of the book.
@@ -132,64 +131,64 @@ def compute_time_step(config,
 """
 # I have to look into this and vectorize it, if possible!
 # this is just copied from C++ code!
-def set_boun_cond(state, config, temp, flag, wW, wE, wN, wS):
+def set_boun_cond(state, config, temp, flag):
     # Left and right boundary
     for jj in xrange(0, config.jmax+2):
-        if wW == 1:
+        if config.wW == 1:
             state.x_velocities[0, jj] = 0.
             state.y_velocities[0, jj] = state.y_velocities[1, jj]
-        elif wW == 2:
+        elif config.wW == 2:
             state.x_velocities[0, jj] = 0.
             state.y_velocities[0, jj] = -state.y_velocities[1, jj]
-        elif wW == 3:
+        elif config.wW == 3:
             state.x_velocities[0, jj] = state.x_velocities[1, jj]
             state.y_velocities[0, jj] = state.y_velocities[1, jj]
-        elif wW == 4:
+        elif config.wW == 4:
             state.x_velocities[0, jj] = state.x_velocities[config.imax - 1, jj]
             state.y_velocities[0, jj] = state.y_velocities[config.imax - 1, jj]
             state.y_velocities[1, jj] = state.y_velocities[config.imax, jj]            
             state.pressures[1, jj] = state.pressures[imax, jj]
         temp[0, jj] = temp[1, jj]
         
-        if wE == 1:
+        if config.wE == 1:
             state.x_velocities[config.imax, jj] = 0.
             state.y_velocities[config.imax+1, jj] = state.y_velocities[config.imax, jj]
-        elif wE == 2:
+        elif config.wE == 2:
             state.x_velocities[config.imax, jj] = 0.
             state.y_velocities[config.imax+1, jj] = -state.y_velocities[config.imax, jj]
-        elif wE == 3:
+        elif config.wE == 3:
             state.x_velocities[config.imax, jj] = state.x_velocities[config.imax-1, jj]
             state.y_velocities[config.imax+1, jj] = state.y_velocities[config.imax, jj]
-        elif wE == 4:
+        elif config.wE == 4:
             state.x_velocities[config.imax, jj] = state.x_velocities[1, jj]
             state.y_velocities[config.imax+1, jj] = state.y_velocities[2, jj]
         temp[config.imax+1, jj] = temp[config.imax, jj]
     # Northern and Southern boundary conditions
     for ii in xrange(0, config.imax+2):
-       if wN == 1:
+       if config.wN == 1:
            state.y_velocities[ii, config.jmax] = 0.
            state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, config.jmax]
-        if wN == 2:
+        if config.wN == 2:
            state.y_velocities[ii, config.jmax] = 0.
            state.x_velocities[ii, config.jmax+1] = -state.x_velocities[ii, config.jmax]
-        if wN == 3:
+        if config.wN == 3:
             state.y_velocities[ii, config.jmax] = state.y_velocities[ii, config.jmax-1]
             state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, config.jmax]
-        if wN == 4:
+        if config.wN == 4:
             state.y_velocities[ii, config.jmax] = state.y_velocities[ii, 1]
             state.x_velocities[ii, config.jmax+1] = state.x_velocities[ii, 2]
         temp[ii,0] = temp[ii,1]
         
-        if wS == 1:
+        if config.wS == 1:
             state.y_velocities[ii, 0] = 0.
             state.x_velocities[ii, 0] = state.x_velocities[ii, 1]
-        elif wS == 2:
+        elif config.wS == 2:
             state.y_velocities[ii, 0] = 0.
             state.x_velocities[ii, 0] = -state.x_velocities[ii, 1]
-        elif wS == 3:
+        elif config.wS == 3:
             state.y_velocities[ii, 0] = state.y_velocities[ii, 1]
             state.x_velocities[ii, 0] = state.x_velocities[ii, 1]
-        elif wS == 4:
+        elif config.wS == 4:
             state.y_velocities[ii, 0] = state.y_velocities[ii, config.jmax-1]
             state.x_velocities[ii, 0] = state.x_velocities[ii, config.jmax-1]
             state.x_velocities[ii, 1] = state.x_velocities[ii, config.jmax]
@@ -201,16 +200,18 @@ def set_boun_cond(state, config, temp, flag, wW, wE, wN, wS):
     for ii in xrange(0, imax+1):
         for jj in xrange(0, jmax+1):
             if flag[ii, jj] and 
+            """ What is 0x000f """
+            
             
 
-
-
-
-
-
-
-
-
+"""
+/*-----------------------------------------------------------------*/
+/* Setting specific boundary conditions, depending on "problem"    */
+/*-----------------------------------------------------------------*/
+Again, this is not consistent with the book.
+Problem 5 has five input, the C++ code has nine!
+"""
+def set_specific_conditions(state, config, temp, problem)
 
 
 

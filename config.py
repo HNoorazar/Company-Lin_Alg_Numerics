@@ -8,8 +8,8 @@ class staticParameters:
         self.ylength = 0. # domain size in y direction
         self.imax = 0 # number of interior cells in x-direction
         self.jmax = 0 # number of interior cells in y-direction
-        self.delta_x = 0.0 # length delta_x of one cell in x-direction
-        self.delta_y = 0.0 # length delta_x of one cell in y-direction
+        self.delta_x = 0. # length delta_x of one cell in x-direction
+        self.delta_y = 0. # length delta_x of one cell in y-direction
 
         # time criteria
         self.current_time = 0. # current time. [Do we need to remove this from here?]
@@ -25,6 +25,16 @@ class staticParameters:
         self.relax_param = 0. # relaxation parameter omega for SOR iteration
         self.gamma = 0. # upwind differencing factor \gamma
 
+        # Problem dependent data
+        self.init_x_vel_scalar = 0. 
+        self.init_y_vel_scalar = 0. 
+        self.init_press_scalar = 0. 
+        self.Ray_no = 0.
+        self.wW = 0
+        self.wE = 0
+        self.wN = 0
+        self.wS = 0
+        
     def printOut(self):
         print("=================")
         print("StaticParameters:")
@@ -95,6 +105,14 @@ class staticParameters:
         self.stop_toler = config.getint('parameters', 'stop_toler')   # 14
         self.relax_param = config.getint('parameters', 'relax_param') # 15
         self.gamma = config.getint('parameters', 'gamma')             # 16
+        self.init_x_vel_scalar = config.getfloat('parameters', init_x_vel_scalar)
+        self.init_y_vel_scalar = config.getfloat('parameters', init_y_vel_scalar)
+        self.init_press_scalar = config.getfloat('parameters', init_press_scalar)
+        self.Ray_no = config.getfloat('parameters', Ray_no)
+        self.wW = config.getint('parameters', wW)
+        self.wE = config.getint('parameters', wE)
+        self.wN = config.getint('parameters', wN)
+        self.wS = config.getint('parameters', wS)
 
         
 
