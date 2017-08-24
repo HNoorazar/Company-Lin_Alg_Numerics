@@ -80,9 +80,11 @@ def initialize_grid_state(config, initial_x_vel, initial_y_vel, initial_pressure
     #         initial_pressure is initial initial pressure
     # output: velocities in x- and y- directions and pressure on all
     #         interior grid points.
-    init_grid_x_vel = initial_x_vel * np.ones(config.imax-1, config.jmax-1)
-    init_grid_y_vel = initial_y_vel * np.ones(config.imax-1, config.jmax-1)
-    init_grid_press = initial_pressure * np.ones(config.imax-1, config.jmax-1)
+    init_grid_x_vel = config.init_x_vel_scalar * np.ones(config.imax-1, config.jmax-1)
+    init_grid_y_vel = config.init_y_vel_scalar * np.ones(config.imax-1, config.jmax-1)
+    init_grid_press = config.init_press_scalar * np.ones(config.imax-1, config.jmax-1)
+    if config.problem != 'backstep':
+        init_grid_x_vel[:, 0: 1+int(config.jmax/2)] = 0.
     return init_grid_x_vel, init_grid_y_vel, init_grid_press
     
 """

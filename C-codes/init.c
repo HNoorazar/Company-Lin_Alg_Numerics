@@ -7,11 +7,13 @@
 /*------------------------------------------------------------------*/
 /* Reading the Input parameters from "Inputfile"                    */
 /*------------------------------------------------------------------*/
-int READ_PARAMETER(char *Inputfile,char *problem,
-		   REAL *xlength,REAL *ylength,int *imax,int *jmax,
-		   REAL *delx,REAL *dely,
-		   REAL *t_end,REAL *delt, REAL *tau,
-		   REAL *del_trace,REAL *del_inj,REAL *del_streak,REAL *del_vec,
+int READ_PARAMETER(char *Inputfile,
+                   char *problem,
+                   REAL *xlength, REAL *ylength,
+                   int *imax, int *jmax,
+                   REAL *delx,REAL *dely,
+                   REAL *t_end,REAL *delt, REAL *tau,
+                   REAL *del_trace, REAL *del_inj,REAL *del_streak,REAL *del_vec,
                    char *vecfile,char *tracefile,char *streakfile,
                    char *infile,char *outfile,
                    int *N,REAL *pos1x,REAL *pos1y,REAL *pos2x, REAL *pos2y,

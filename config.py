@@ -39,26 +39,51 @@ class staticParameters:
         print("=================")
         print("StaticParameters:")
         print("=================")
+        print("Problem = " + str(self.problem))
         print ("Geometry Data")
-        print("domain size in x direction              = " + str(self.xlength))
-        print("domain size in y direction              = " + str(self.ylength))
-        print("No. of interior cells in x-direction    = " + str(self.imax))        
-        print("No. of interior cells in y-direction    = " + str(self.jmax))
-        print("length del_x of 1 cell in x-direction   = " + str(self.delta_x))
-        print("length del_x of 1 cell in x-direction   = " + str(self.delta_y))
+        print("domain size in x direction            = " + str(self.xlength))
+        print("domain size in y direction            = " + str(self.ylength))
+        print("No. of interior cells in x-direction  = " + str(self.imax))        
+        print("No. of interior cells in y-direction  = " + str(self.jmax))
+        print("length del_x of 1 cell in x-direction = " + str(self.delta_x))
+        print("length del_x of 1 cell in x-direction = " + str(self.delta_y))
 
         print ("Time Criteria")        
-        print("Current Time          = "+str(self.current_time))
-        print("Final Time            = "+str(self.final_t))
-        print("Time Step Size        = "+str(self.deta_t))
-        print("delta_t Safety Factor = "+str(self.safety_tau))
+        print("Final Time     = "+str(self.final_t))
+        print("Time Step Size = "+str(self.deta_t))
+        print("Safety Factor  = "+str(self.safety_tau))
+        
+        print("del_trace  = "+str(self.del_trace))
+        print("del_inj    = "+str(self.del_inj))
+        print("del_streak = "+str(self.del_streak))
+        print("del_vec    = "+str(self.del_vec))
+
+        print("vec_file    = "+str(self.vec_file))
+        print("trace_file  = "+str(self.trace_file))
+        print("streak_file = "+str(self.streak_file))
+
+        print("in_file = "+str(self.in_file))
+        print("out_file = "+str(self.out_file))
+        
+        print("N = "+str(self.N))
+        print("pos1x = "+str(self.pos1x))
+        print("pos1y = "+str(self.pos1y))
+        print("pos2x = "+str(self.pos2x))
+        print("pos2y = "+str(self.pos2y))
 
         print ("Pressure Iteration Data")
         print ("Maximal No. of pressure iterations in one time step = " + str(self.iteration_max))
-        print ("norm of pressure equation residual = " + str(self.iteration_count)) # Do we need to remove this?
-        print ("SOR iteration counter = " + str(self.res_norm)) # Do we need to remove this?
-        print ("stopping tolerance for pressure iteration = " + str(self.stop_toler))
-        print ("relaxation parameter omega for SOR iteration = " + str(self.gamma))        
+        print ("stopping tolerance for pressure iteration           = " + str(self.stop_toler))  # epsilon
+        print ("relaxation parameter omega for SOR iteration        = " + str(self.relax_param)) # omega
+        print ("gamma   = " + str(self.gamma))
+        print ("p_bound = " + str(self.p_bound))
+        print ("Reynolds number = " + str(self.Ray_no))
+        print ("Pr   = " + str(self.Pr))
+        print ("beta = " + str(self.beta))
+        print ("GX   = " + str(self.GX))
+        print ("GY   = " + str(self.GY))
+
+
         print("")
 
     def writeToFile(self, fname):
@@ -74,7 +99,7 @@ class staticParameters:
         config.set('parameters', 'current_time', self.current_time) # 7
         config.set('parameters', 'final_t', self.final_t) # 8
         config.set('parameters', 'deta_t', self.deta_t)   # 9
-        config.set('parameters', 'safety_tau', self.safety_tau)           # 10
+        config.set('parameters', 'safety_tau', self.safety_tau) # 10
         config.set('parameters', 'iteration_max', self.iteration_max)     # 11
         config.set('parameters', 'iteration_count', self.iteration_count) # 12
         config.set('parameters', 'res_norm', self.res_norm)       # 13
@@ -89,37 +114,48 @@ class staticParameters:
     def readFromFile(self, fname):
         config = configparser.RawConfigParser()
         config.read(fname)
-        self.xlength = config.getfloat('parameters', 'xlength') # 1
-        self.ylength = config.getfloat('parameters', 'ylength') # 2
-        self.imax = config.getfloat('parameters', 'imax')       # 3
-        self.jmax = config.getfloat('parameters', 'jmax')       # 4
-        self.delta_x = config.getfloat('parameters', 'xlength') / config.getfloat('parameters', 'imax') # 5
-        self.delta_y = config.getfloat('parameters', 'ylength') / config.getfloat('parameters', 'jmax') # 6
-        self.current_time = config.getint('parameters', 'current_time') # 7
+        self.problem = config.get('parameters', 'problem') # 1 string?
+        self.xlength = config.getfloat('parameters', 'xlength') # 2
+        self.ylength = config.getfloat('parameters', 'ylength') # 3
+        self.imax = config.getfloat('parameters', 'imax')       # 4
+        self.jmax = config.getfloat('parameters', 'jmax')       # 5
+        self.delta_x = config.getfloat('parameters', 'xlength') / config.getfloat('parameters', 'imax') # 6
+        self.delta_y = config.getfloat('parameters', 'ylength') / config.getfloat('parameters', 'jmax') # 7
         self.final_t = config.getint('parameters', 'final_t') # 8
         self.deta_t = config.getint('parameters', 'deta_t')   # 9
-        self.safety_tau = config.getint('parameters', 'safety_tau')           # 10
-        self.iteration_max = config.getint('parameters', 'iteration_max')     # 11
-        self.iteration_count = config.getint('parameters', 'iteration_count') # 12
-        self.res_norm = config.getint('parameters', 'res_norm')       # 13
-        self.stop_toler = config.getint('parameters', 'stop_toler')   # 14
-        self.relax_param = config.getint('parameters', 'relax_param') # 15
-        self.gamma = config.getint('parameters', 'gamma')             # 16
-        self.init_x_vel_scalar = config.getfloat('parameters', init_x_vel_scalar)
-        self.init_y_vel_scalar = config.getfloat('parameters', init_y_vel_scalar)
-        self.init_press_scalar = config.getfloat('parameters', init_press_scalar)
-        self.Ray_no = config.getfloat('parameters', Ray_no)
-        self.wW = config.getint('parameters', wW)
-        self.wE = config.getint('parameters', wE)
-        self.wN = config.getint('parameters', wN)
-        self.wS = config.getint('parameters', wS)
-
-        
-
-
-
-
-
-
+        self.safety_tau = config.getint('parameters', 'safety_tau') # 10
+        self.del_trace = config.getfloat('parameters', 'del_trace') # 11
+        self.del_inj = config.getfloat('parameters', 'del_inj')     # 12
+        self.del_streak = config.getfloat('parameters', 'del_streak') # 13
+        self.del_vec = config.getfloat('parameters', 'del_vec')    # 14
+        self.vec_file = config.get('parameters', 'vec_file')       # 15 string?
+        self.trace_file = config.get('parameters', 'trace_file')   # 16 string?
+        self.streak_file = config.get('parameters', 'streak_file') # 17 string?
+        self.in_file = config.get('parameters', 'in_file')         # 18 string?
+        self.out_file = config.get('parameters', 'out_file')       # 19 string?
+        self.N = config.getint('parameters', 'N') # 20
+        self.pos1x = config.getfloat('parameters', 'pos1x') # 21
+        self.pos1y = config.getfloat('parameters', 'pos1y') # 22
+        self.pos2x = config.getfloat('parameters', 'pos2x') # 23
+        self.pos2y = config.getfloat('parameters', 'pos2y') # 24
+        self.iteration_max = config.getint('parameters', 'iteration_max') # 25
+        self.stop_toler = config.getfloat('parameters', 'stop_toler') # This is epsilon in C++
+        self.relax_param = config.getfloat('parameters', 'relax_param') # This is omega in C++
+        self.gamma = config.getfloat('parameters', 'gamma')     # 26 This is upwind differencing parameter.
+        self.p_bound = config.getint('parameters', 'p_bound')   # 27
+        self.res_norm = config.getint('parameters', 'res_norm') # 28
+        self.Ray_no = config.getfloat('parameters', Ray_no)     # 29. This is called Re in C++
+        self.Pr = config.getfloat('parameters', Pr)             # 30
+        self.beta = config.getfloat('parameters',beta) # 31
+        self.GX = config.getfloat('parameters', GX)    # 32
+        self.GY = config.getfloat('parameters', GY)    # 33
+        self.init_x_vel_scalar = config.getfloat('parameters', init_x_vel_scalar) # 34
+        self.init_y_vel_scalar = config.getfloat('parameters', init_y_vel_scalar) # 35
+        self.init_press_scalar = config.getfloat('parameters', init_press_scalar) # 36
+        self.TI = config.getfloat('parameters', TI) # What the hell is TI? # 37
+        self.wW = config.getint('parameters', wW) # 38
+        self.wE = config.getint('parameters', wE) # 39
+        self.wN = config.getint('parameters', wN) # 40
+        self.wS = config.getint('parameters', wS) # 41
 
 
