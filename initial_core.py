@@ -318,7 +318,10 @@ def POISSON(config, state, RHS, flag, press_residual, ifull):
                                    (eps_N * state.pressures[ii, jj+1] + 
                                    eps_S * state.pressures[ii, jj-1]) * rdy2 -
                                    RHS[i][j])
-
+            """
+            /* computation of residual */
+            /*-------------------------*/
+            """     
 
 
 
