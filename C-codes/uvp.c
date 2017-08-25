@@ -90,16 +90,17 @@ void COMP_FG(REAL **U,REAL **V,REAL **TEMP,REAL **F,REAL **G,int **FLAG,
            ((FLAG[i][j+1] & C_F) && (FLAG[i][j+1] < C_E)) )
          {
           DUVDX = ((U[i][j]+U[i][j+1])*(V[i][j]+V[i+1][j])+
-	   	      gamma*fabs(U[i][j]+U[i][j+1])*(V[i][j]-V[i+1][j])-
-	   	(U[i-1][j]+U[i-1][j+1])*(V[i-1][j]+V[i][j])-
+                   gamma*fabs(U[i][j]+U[i][j+1])*(V[i][j]-V[i+1][j])-
+                    (U[i-1][j]+U[i-1][j+1])*(V[i-1][j]+V[i][j])-
 	   	      gamma*fabs(U[i-1][j]+U[i-1][j+1])*(V[i-1][j]-V[i][j]))
 	          /(4.0*delx);
+          
           DV2DY = ((V[i][j]+V[i][j+1])*(V[i][j]+V[i][j+1])+
 	   	      gamma*fabs(V[i][j]+V[i][j+1])*(V[i][j]-V[i][j+1])-
 	           (V[i][j-1]+V[i][j])*(V[i][j-1]+V[i][j])-
 	   	      gamma*fabs(V[i][j-1]+V[i][j])*(V[i][j-1]-V[i][j]))
 	          /(4.0*dely);
-
+              
           LAPLV = (V[i+1][j]-2.0*V[i][j]+V[i-1][j])/delx/delx+
 	          (V[i][j+1]-2.0*V[i][j]+V[i][j-1])/dely/dely;
 

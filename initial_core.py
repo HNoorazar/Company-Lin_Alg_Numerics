@@ -7,6 +7,7 @@ different files, modules, etc.
 """
 
 import numpy as np
+from math import log, sqrt
 """
 1D discrete derivatives.
 """
@@ -122,27 +123,27 @@ def compute_time_step(config,
     return delta_t    
     
 """    
-Problem 6 of the book. 
-Computation of F and G according to (3.36) and (3.37). 
-At the boundary the formulas (3.42) must be applied.
 /*----------------------------------------------------------------*/
 /* Computation of tentative velocity field (F,G)                  */
 /*----------------------------------------------------------------*/
+Problem 6 of the book. 
+Computation of F and G according to (3.36) and (3.37). 
+At the boundary the formulas (3.42) must be applied.
 """
 # I might be able to vectorize this! look @ it closely!!!
 def compute_FG(config, state, flag, temp, F, G):
     for ii in range(1, config.imax):
         for jj in range(1, config.jmax+1):
-            if (( ((flag[ii, jj] & C_F) and (flag[ii, jj] < C_E)) and
-               ((  flag[ii+1, jj] & C_F) and (flag[ii+1, jj] < C_E)) ):
+            if (( ((flag[ii, jj]   & C_F) and (flag[ii, jj]   < C_E)) and
+               ((   flag[ii+1, jj] & C_F) and (flag[ii+1, jj] < C_E)) ):
                 DU2DX = (
                          (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii+1, jj]) * 
-                         (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii+1, jj])+
+                         (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii+1, jj]) +
 	                     config.gamma * np.abs(state.x_grid_vel[ii, jj] + 
 	                     state.x_grid_vel[ii+1, jj]) * 
-	                     (state.x_grid_vel[ii, jj] - state.x_grid_vel[ii+1, jj])-
+	                     (state.x_grid_vel[ii, jj] - state.x_grid_vel[ii+1, jj]) -
 	                     (state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii, jj]) * 
-	                     (state.x_grid_vel[i-1][j] + state.x_grid_vel[ii, jj])-
+	                     (state.x_grid_vel[i-1][j] + state.x_grid_vel[ii, jj]) -
                          config.gamma * np.abs(state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii, jj]) * 
                          (state.x_grid_vel[ii-1, jj] - state.x_grid_vel[ii, jj])
                          )
@@ -171,5 +172,157 @@ def compute_FG(config, state, flag, temp, F, G):
                             temp[ii+1, jj])/2
             else:
                 F[ii, jj] = state.x_grid_vel[ii, jj]
+                
+    for ii in xrange(1, config.imax+1):
+        for jj in xrange(1, config.jmax):
+            # /* only if both adjacent cells are fluid cells */
+            if( ((flag[ii, jj]   & C_F) and (flag[ii, jj]   < C_E)) and
+                ((flag[ii, jj+1] & C_F) and (flag[ii, jj+1] < C_E)) ):
+                
+                DUVDX = (
+                         (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii, jj+1]) * 
+                         (state.y_grid_vel[ii, jj] + state.y_grid_vel[ii+1, jj]) +
+                          config.gamma * np.abs(state.x_grid_vel[ii, jj] + state.x_grid_vel[ii, jj+1]) *
+                         (state.y_grid_vel[ii, jj] - state.y_grid_vel[ii+1, jj]) -
+                         (state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii-1, jj+1]) * 
+                         (state.y_grid_vel[ii-1, jj] + state.y_grid_vel[ii, jj])-
+                          config.gamma * np.abs(state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii-1, jj+1]) * 
+                          (state.y_grid_vel[ii-1, jj]-state.y_grid_vel[ii, jj])
+                        )
+                         / (4.0 * config.delta_x)
+                
+                DV2DY = (
+                         (state.y_grid_vel[ii, jj] + state.y_grid_vel[ii, jj+1]) *
+                         (state.y_grid_vel[ii, jj] + state.y_grid_vel[ii, jj+1]) +
+                          gamma * np.abs(state.y_grid_vel[ii, jj] + state.y_grid_vel[ii, jj+1]) * 
+                          (state.y_grid_vel[ii, jj] - state.y_grid_vel[ii, jj+1]) -
+                         (state.y_grid_vel[ii, jj-1] + state.y_grid_vel[ii, jj]) * 
+                         (state.y_grid_vel[ii, jj-1] + state.y_grid_vel[ii, jj]) -
+                          gamma * np.abs(state.y_grid_vel[ii, jj-1] + state.y_grid_vel[ii, jj]) * 
+                          (state.y_grid_vel[ii, jj-1] - state.y_grid_vel[ii, jj])
+                        )
+                        /(4.0 * config.delta_y)
+
+                LAPLV = (state.y_grid_vel[ii+1, jj] - 2.0 * state.y_grid_vel[ii, jj] + 
+                         state.y_grid_vel[ii-1 ,jj]) / (config.delta_x ** 2) +
+                        (state.y_grid_vel[ii, jj+1] - 2.0 * state.y_grid_vel[ii, jj] + 
+                          state.y_grid_vel[ii, jj-1]) / (config.delta_y ** 2)
+
+                G[ii, jj] = state.y_grid_vel[ii, jj] + config.delta_t * ( LAPLV / config.Ray_no - DUVDX - DV2DY + config.GY)
+                            -config.delta_t * config.beta * config.GY * (temp[ii, jj] + temp[ii, jj+1]) / 2
+            else:
+                G[ii, jj] = state.y_grid_vel[ii, jj];
+ """
+  /* F und G at external boundary */
+  /*------------------------------*/ 
+ """
+    for ii in xrange(1, config.jmax+1):
+        F[0, jj] = state.x_grid_vel[0, jj]
+        F[config.imax, jj] = state.x_grid_vel[imax, jj]
+        
+    for ii in xrange(1, config.imax+1):
+        G[ii, 0] = state.y_grid_vel[i][0]
+        G[ii, config.jmax] = state.y_grid_vel[ii, config.jmax]
+    return F, G
+
+"""
+/*-------------------------------------------------------------*/
+/* Computation of the right hand side of the pressure equation */
+/*-------------------------------------------------------------*/
+Problem 7 of the book.
+Computation ofthe right-hand side of the pressure equation (3.38).
+"""
+def compute_RHS(config, F, G, RHS, flag):
+    for ii in xrange(1, config.imax+1):
+        for jj in xrange(1, config.jmax+1):
+            if ((flag[ii, jj] & C_F) and (flag[ii, jj] < 0x0100))  
+        # /* only for fluid and non-surface cells */
+                RHS[ii, jj] = (
+                               (F[ii, jj] - F[ii-1, jj]) / config.delta_x + 
+                               (G[ii, jj] - G[ii, jj-1]) / config.delta_y
+                              )/config.delta_t
+    return RHS
+
+"""
+/*-------------------------------------------------------------*/
+/* Computation of the right hand side of the pressure equation */
+/*-------------------------------------------------------------*/
+
+Problem 8 of the book:
+SOR iteration for the pressure Poisson 
+equation according to (3.44). 
+The iteration is terminated once 
+the residual norm res drops below 
+the tolerance limit eps 
+(absolute or relative, multiplied 
+by the norm of the initial pressure) 
+or once the maximal number of 
+iterations itermax is reached. 
+Upon completion, the number of 
+steps taken is returned and the 
+current residual norm is stored in res.
+If the pressure boundary values 
+are treated using the second method, 
+then the boundary values must be 
+set according to (3.48) prior to 
+each iteration step.
+"""
+config.iteration_max
+def POISSON(config, state, RHS, flag, press_residual, ifull):
+    # config.res_norm = press_residual \* If press_residual is a parameter
+    # provided by user we can use config. but it that will be changing during
+    # dynamics then it has to be taken out of config. I still do not know.
+    # Have to read the book! */
+    p0 = 0.0
+    rdx2 = 1./(config.delta_x ** 2)
+    rdy2 = 1./(config.delta_y ** 2)
+    beta_2 = -config.relax_param /(2.0*(rdx2+rdy2))
+    for ii in xrange(1, config.imax+1):
+        for jj in xrange(1, config.jmax+1):
+            if (flag[ii, jj] & C_F):
+                p0 += (state.pressures[ii,jj] ** 2)
+    p0 = sqrt(p0/ifull)
+    if p0 < 0.0001:
+        p0 = 1.0
+    """
+    /* SOR-iteration */
+    /*---------------*/
+    """
+    for (iter=1;iter<=itermax;iter++):
+        if (p_bound == 1):
+        """
+        /* modify the equation at the boundary */
+        /*-------------------------------------*/
+        /* relaxation for fluid cells */
+        /*----------------------------*/
+        """
+            for ii in xrange(1, config.imax+1):
+                for jj in xrange(1, config.jmax+1):
+                    # /* five point star for interior fluid cells */
+                    if (flag[ii, jj] == 0x001f):
+                        state.pressures[ii, jj] = (1. - config.relax_param) * state.pressures[ii, jj] - 
+                                                  beta_2 * 
+                                                  (
+                                                   (state.pressures[ii+1, jj] + 
+                                                    state.pressures[ii-1, jj]) * rdx2 +
+                                                   (state.pressures[ii, jj+1] + 
+                                                    state.pressures[ii, jj-1]) * rdy2 - 
+                                                    RHS[ii, jj]
+                                                  )
+                    # /* modified star near boundary */
+                    elif ((flag[ii, jj] & C_F) and (flag[ii, jj] < 0x0100)):
+                        beta_mod = -config.relax_param/((eps_E + eps_W) * rdx2 + (eps_N + eps_S) * rdy2);
+                        state.pressures[ii, jj] = (1. - config.relax_param) * state.pressures[ii, jj] -
+                                   beta_mod * ( (eps_E * state.pressures[ii+1, jj] + 
+                                   eps_W * state.pressures[ii-1, jj]) * rdx2 +
+                                   (eps_N * state.pressures[ii, jj+1] + 
+                                   eps_S * state.pressures[ii, jj-1]) * rdy2 -
+                                   RHS[i][j])
+
+
+
+
+
+
 
 
