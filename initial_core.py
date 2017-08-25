@@ -63,7 +63,8 @@ def second_centre_deriv(grids, func):
     half_size = step_size/2
     second_derivatives = np.zeros((1, no_derivs))
     for deriv_counter in range(1, no_derivs+1):
-        numerator = func(grids(deriv_counter-1)) - 2 * func(grids(deriv_counter)) + func(grids(deriv_counter+1))
+        numerator = func(grids(deriv_counter-1)) - 2 * func(grids(deriv_counter)) + 
+                                                     func(grids(deriv_counter+1))
         second_derivatives[0, deriv_counter-1] = numerator / (step_size**2)
     return second_derivatives
 
@@ -114,10 +115,61 @@ def compute_time_step(config,
                                                1./(config.delta_y ** 2)) * (Reynolds / 2.)
         second_element = config.delta_x / np.abs(np.max(x_grid_vel))
         third_element = config.delta_y / np.abs(np.max(y_grid_vel)) 
-        delta_t = config.safety_tau * np.minimum(first_element, second_element, third_element)
+        delta_t = config.safety_tau * 
+                                  np.minimum(first_element, second_element, third_element)
     else:
         delta_t = config.deta_t
     return delta_t    
     
-    
+"""    
+Problem 6 of the book. 
+Computation of F and G according to (3.36) and (3.37). 
+At the boundary the formulas (3.42) must be applied.
+/*----------------------------------------------------------------*/
+/* Computation of tentative velocity field (F,G)                  */
+/*----------------------------------------------------------------*/
+"""
+# I might be able to vectorize this! look @ it closely!!!
+def compute_FG(config, state, flag, temp, F, G):
+    for ii in range(1, config.imax):
+        for jj in range(1, config.jmax+1):
+            if (( ((flag[ii, jj] & C_F) and (flag[ii, jj] < C_E)) and
+               ((  flag[ii+1, jj] & C_F) and (flag[ii+1, jj] < C_E)) ):
+                DU2DX = (
+                         (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii+1, jj]) * 
+                         (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii+1, jj])+
+	                     config.gamma * np.abs(state.x_grid_vel[ii, jj] + 
+	                     state.x_grid_vel[ii+1, jj]) * 
+	                     (state.x_grid_vel[ii, jj] - state.x_grid_vel[ii+1, jj])-
+	                     (state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii, jj]) * 
+	                     (state.x_grid_vel[i-1][j] + state.x_grid_vel[ii, jj])-
+                         config.gamma * np.abs(state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii, jj]) * 
+                         (state.x_grid_vel[ii-1, jj] - state.x_grid_vel[ii, jj])
+                         )
+                         /(4.0 * config.delta_x);
+                
+                DUVDY = (
+                         (state.y_grid_vel[ii, jj] + state.y_grid_vel[ii+1, jj]) * 
+                         (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii, jj+1]) +
+                         config.gamma * np.abs(state.y_grid_vel[ii, jj] + 
+                         state.y_grid_vel[ii+1, jj]) * 
+                         (state.x_grid_vel[i][j] - state.x_grid_vel[i][j+1]) -
+	                     (state.y_grid_vel[ii, jj-1] + state.y_grid_vel[ii+1, jj-1]) * 
+	                     (state.x_grid_vel[ii, jj-1] + state.x_grid_vel[ii, jj])-
+	                     config.gamma * np.abs(state.y_grid_vel[i][j-1] + state.y_grid_vel[ii+1, jj-1]) * 
+	                     (state.x_grid_vel[ii, jj-1] - state.x_grid_vel[ii, jj])
+	                     )	                     
+                         /(4.0 * config.delta_y)
+                
+                LAPLU = (state.x_grid_vel[ii+1, jj] - 2.0 * state.x_grid_vel[ii, jj] + state.x_grid_vel[ii-1, jj]) / (config.delta_x ** 2) +  
+	                    (state.x_grid_vel[ii, jj+1] - 2.0 * state.x_grid_vel[ii, jj] + state.x_grid_vel[ii, jj-1]) / (config.delta_y ** 2)
+                  
+                
+                F[ii, jj] = state.x_grid_vel[ii, jj] + 
+                            config.delta_t * (LAPLU / config.Ray_no - DU2DX - DUVDY + config.GX) -
+                            config.delta_t * config.beta * config.GX * (temp[ii, jj] + 
+                            temp[ii+1, jj])/2
+            else:
+                F[ii, jj] = state.x_grid_vel[ii, jj]
+
 
