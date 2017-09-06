@@ -9,11 +9,9 @@
  For temperature, adiabatic boundary conditions are set.         
 -----------------------------------------------------------------
 """
-# I have to look into this and vectorize it, if possible!
-# this is just copied from C++ code!
 def set_boun_cond(state, config):
     # Left and right boundary
-    	# First Loop
+    # First Loop
 	# western and eastern boundary
 	if config.wW == 1:
 		state.x_grid_vel[0, :] = 0.
@@ -219,7 +217,8 @@ def set_specific_conditions(state, config):
         
         state.temp[0:config.imax+2, 0] = 2*(0.5) - state.temp[0:config.imax+2, 1] # lower wall heated
         # upper wall cooled:
-        state.temp[0:config.imax+2, config.jmax+1] = 2*(-0.5) - state.temp[0:config.imax+2, config.jmax]
+        state.temp[0:config.imax+2, config.jmax+1] = 2 * (-0.5) - 
+                                                     state.temp[0:config.imax+2, config.jmax]
         break
     else:
        print ('Problem {} not defined!'.format(config.problem))

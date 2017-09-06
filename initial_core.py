@@ -76,7 +76,6 @@ Problem 2 of page 43 of the book.
 Initialize the velocities and pressures
 at interior grid points:
 This is the same as "INIT_UVP" in init.py of C++ code.
-
 /*---------------------------------------------------------------*/
 /* Setting the initial values for U,V,P, and TEMP                */
 /*---------------------------------------------------------------*/
@@ -134,8 +133,8 @@ def initialize_flag(config, state):
         /* flow past an inclined plate */
         /* lower and upper bound of the plate */
         """
-        low = 2*config.jmax/5;
-        up  = 3*config.jmax/5;
+        low = 2 * config.jmax / 5;
+        up  = 3 * config.jmax / 5;
         state.flag[low, low]   = defn.C_B
         state.flag[low, low+1] = defn.C_B
         state.flag[up, up-1]   = defn.C_B
@@ -236,7 +235,6 @@ In case of neg- ative tau
 the stepsize read in READ-PARAMETER 
 is to be use
 """
-
 def compute_time_step(config,
                       x_grid_vel, y_grid_vel, 
                       Reynolds):
@@ -261,7 +259,70 @@ def compute_time_step(config,
         delta_t = config.deta_t
     return delta_t    
     
-"""    
+#                                  UVP.C 
+"""
+/*---------------------------------------------------------------*/
+/* Computation of new temperature                                */
+/*---------------------------------------------------------------*/
+"""
+def compute_temp(config, state):
+    T2 = np.zeros((config.imax+2, config.jmax+2))
+    indelx2 = 1. / (config.delta_x ** 2)
+    indely2 = 1. / (config.delta_y ** 2)
+    for ii in xrange(1, config.imax+1):
+        for jj in xrange(1, config.jmax+1):
+            if ( (state.flag[ii, jj] & defn.C_F) and (state.flag[ii, jj] < defn.C_E) ):
+                LAPLT = (
+                         state.temp[ii+1, jj] - 
+                         2.0 * state.temp[ii, jj] + 
+                         state.temp[ii-1, jj]
+                         ) * indelx2 +
+		                (
+		                 state.temp[ii, jj+1] - 
+		                 2.0 * state.temp[ii, jj] + state.temp[ii, jj-1]
+		                 ) * indely2
+		        DUTDX = ((
+                          state.x_grid_vel[ii, jj] * 0.5 * 
+                          (state.temp[ii, jj]+state.temp[ii+1, jj]) -
+                          state.x_grid_vel[ii-1, jj] * 0.5 * 
+                          (state.temp[ii-1, jj] + state.temp[ii, jj])
+				          ) +
+		                  config.gamma * 
+		                   ( np.abs(state.x_grid_vel[ii, jj]) * 0.5 * 
+		                   (state.temp[ii, jj] - state.temp[ii+1, jj]) -
+				             np.abs(state.x_grid_vel[ii-1, jj]) * 0.5 * 
+				             (state.temp[ii-1, jj] - state.temp[ii, jj])
+				           )) / config.delta_x;
+				DVTDY = (( state.y_grid_vel[ii, jj] * 0.5 * 
+				           ( state.temp[ii, jj] + state.temp[ii, jj+1]) -
+                           state.y_grid_vel[ii, jj-1] * 0.5 * 
+                           ( state.temp[ii, jj-1] + state.temp[ii, jj])) +
+                           gamma * (np.abs(state.y_grid_vel[ii, jj]) * 0.5 * 
+                                               (state.temp[ii, jj] - state.temp[ii, jj+1]) -
+                           np.abs(state.y_grid_vel[ii, jj-1]) * 0.5 * 
+                               ( state.temp[ii, jj-1] - state.temp[ii, jj]))
+                           ) / config.delta_y;
+                T2[ii, jj] = state.temp[ii, jj] + 
+                             config.delta_t * 
+                             ( LAPLT / config.Ray_no / config.Pr - DUTDX - DVTDY);
+    """
+    for ii in xrange(1, config.imax+1):
+        for jj in xrange(1, config.jmax+1):
+            if ( (state.flag[ii, jj] & defn.C_F) and (state.flag[ii, jj] < defn.C_E) ):
+                state.temp[ii, jj] = T2[ii, jj]
+    """
+    # This is vectorized version of the code above. (last 4 lines)
+    A = state.flag[1:config.imax+1, 1:config.jmax+1] & defn.C_F
+    B = (state.flag[1:config.imax+1, 1:config.jmax+1] < defn.C_E) * 1
+    C = A * B
+    D = np.zeros((config.imax+2, config.jmax+2))
+    D[1:config.imax+1, 1:config.jmax+1] = C
+    state.temp[D == True] = T2[D == True]
+    del T2, A, B, C, D # free up memory
+    return state
+
+
+"""
 /*----------------------------------------------------------------*/
 /* Computation of tentative velocity field (F,G)                  */
 /*----------------------------------------------------------------*/
@@ -270,7 +331,7 @@ Computation of F and G according to (3.36) and (3.37).
 At the boundary the formulas (3.42) must be applied.
 """
 # I might be able to vectorize this! look @ it closely!!!
-def compute_FG(config, state, temp, F, G):
+def compute_FG(config, state, F, G):
     for ii in range(1, config.imax):
         for jj in range(1, config.jmax+1):
             if (( ((state.flag[ii, jj]   & C_F) and (state.flag[ii, jj]   < C_E)) and
@@ -282,7 +343,7 @@ def compute_FG(config, state, temp, F, G):
 	                     state.x_grid_vel[ii+1, jj]) * 
 	                     (state.x_grid_vel[ii, jj] - state.x_grid_vel[ii+1, jj]) -
 	                     (state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii, jj]) * 
-	                     (state.x_grid_vel[i-1][j] + state.x_grid_vel[ii, jj]) -
+	                     (state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii, jj]) -
                          config.gamma * np.abs(state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii, jj]) * 
                          (state.x_grid_vel[ii-1, jj] - state.x_grid_vel[ii, jj])
                          )
@@ -293,10 +354,10 @@ def compute_FG(config, state, temp, F, G):
                          (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii, jj+1]) +
                          config.gamma * np.abs(state.y_grid_vel[ii, jj] + 
                          state.y_grid_vel[ii+1, jj]) * 
-                         (state.x_grid_vel[i][j] - state.x_grid_vel[i][j+1]) -
+                         (state.x_grid_vel[ii, jj] - state.x_grid_vel[ii, jj+1]) -
 	                     (state.y_grid_vel[ii, jj-1] + state.y_grid_vel[ii+1, jj-1]) * 
 	                     (state.x_grid_vel[ii, jj-1] + state.x_grid_vel[ii, jj])-
-	                     config.gamma * np.abs(state.y_grid_vel[i][j-1] + state.y_grid_vel[ii+1, jj-1]) * 
+	                     config.gamma * np.abs(state.y_grid_vel[ii, jj-1] + state.y_grid_vel[ii+1, jj-1]) * 
 	                     (state.x_grid_vel[ii, jj-1] - state.x_grid_vel[ii, jj])
 	                     )	                     
                          /(4.0 * config.delta_y)
@@ -307,8 +368,8 @@ def compute_FG(config, state, temp, F, G):
                 
                 F[ii, jj] = state.x_grid_vel[ii, jj] + 
                             config.delta_t * (LAPLU / config.Ray_no - DU2DX - DUVDY + config.GX) -
-                            config.delta_t * config.beta * config.GX * (temp[ii, jj] + 
-                            temp[ii+1, jj])/2
+                            config.delta_t * config.beta * config.GX * (state.temp[ii, jj] + 
+                            state.temp[ii+1, jj])/2
             else:
                 F[ii, jj] = state.x_grid_vel[ii, jj]
                 
@@ -321,11 +382,13 @@ def compute_FG(config, state, temp, F, G):
                 DUVDX = (
                          (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii, jj+1]) * 
                          (state.y_grid_vel[ii, jj] + state.y_grid_vel[ii+1, jj]) +
-                          config.gamma * np.abs(state.x_grid_vel[ii, jj] + state.x_grid_vel[ii, jj+1]) *
+                          config.gamma * np.abs(state.x_grid_vel[ii, jj] + 
+                          state.x_grid_vel[ii, jj+1]) *
                          (state.y_grid_vel[ii, jj] - state.y_grid_vel[ii+1, jj]) -
                          (state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii-1, jj+1]) * 
                          (state.y_grid_vel[ii-1, jj] + state.y_grid_vel[ii, jj])-
-                          config.gamma * np.abs(state.x_grid_vel[ii-1, jj] + state.x_grid_vel[ii-1, jj+1]) * 
+                          config.gamma * np.abs(state.x_grid_vel[ii-1, jj] + 
+                          state.x_grid_vel[ii-1, jj+1]) * 
                           (state.y_grid_vel[ii-1, jj]-state.y_grid_vel[ii, jj])
                         )
                          / (4.0 * config.delta_x)
@@ -333,7 +396,8 @@ def compute_FG(config, state, temp, F, G):
                 DV2DY = (
                          (state.y_grid_vel[ii, jj] + state.y_grid_vel[ii, jj+1]) *
                          (state.y_grid_vel[ii, jj] + state.y_grid_vel[ii, jj+1]) +
-                          gamma * np.abs(state.y_grid_vel[ii, jj] + state.y_grid_vel[ii, jj+1]) * 
+                          gamma * np.abs(state.y_grid_vel[ii, jj] + 
+                          state.y_grid_vel[ii, jj+1]) * 
                           (state.y_grid_vel[ii, jj] - state.y_grid_vel[ii, jj+1]) -
                          (state.y_grid_vel[ii, jj-1] + state.y_grid_vel[ii, jj]) * 
                          (state.y_grid_vel[ii, jj-1] + state.y_grid_vel[ii, jj]) -
@@ -347,8 +411,10 @@ def compute_FG(config, state, temp, F, G):
                         (state.y_grid_vel[ii, jj+1] - 2.0 * state.y_grid_vel[ii, jj] + 
                           state.y_grid_vel[ii, jj-1]) / (config.delta_y ** 2)
 
-                G[ii, jj] = state.y_grid_vel[ii, jj] + config.delta_t * ( LAPLV / config.Ray_no - DUVDX - DV2DY + config.GY)
-                            -config.delta_t * config.beta * config.GY * (temp[ii, jj] + temp[ii, jj+1]) / 2
+                G[ii, jj] = state.y_grid_vel[ii, jj] + config.delta_t * 
+                            ( LAPLV / config.Ray_no - DUVDX - DV2DY + config.GY)
+                            -config.delta_t * config.beta * config.GY * 
+                            (state.temp[ii, jj] + state.temp[ii, jj+1]) / 2
             else:
                 G[ii, jj] = state.y_grid_vel[ii, jj];
  """
@@ -360,7 +426,7 @@ def compute_FG(config, state, temp, F, G):
         F[config.imax, jj] = state.x_grid_vel[imax, jj]
         
     for ii in xrange(1, config.imax+1):
-        G[ii, 0] = state.y_grid_vel[i][0]
+        G[ii, 0] = state.y_grid_vel[ii, 0]
         G[ii, config.jmax] = state.y_grid_vel[ii, config.jmax]
     return F, G
 
@@ -456,7 +522,7 @@ def POISSON(config, state, RHS, press_residual, ifull):
                                    eps_W * state.pressures[ii-1, jj]) * rdx2 +
                                    (eps_N * state.pressures[ii, jj+1] + 
                                    eps_S * state.pressures[ii, jj-1]) * rdy2 -
-                                   RHS[i][j])
+                                   RHS[ii, jj])
             """
             /* computation of residual */
             /*-------------------------*/
