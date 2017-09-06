@@ -119,7 +119,9 @@ class staticParameters:
         self.ylength = config.getfloat('parameters', 'ylength') # 3
         self.imax = config.getfloat('parameters', 'imax')       # 4
         self.jmax = config.getfloat('parameters', 'jmax')       # 5
-        self.delta_x = config.getfloat('parameters', 'xlength') / config.getfloat('parameters', 'imax') # 6
+        # should not we get rid of the two followings? 
+        # These can be computed by division of xlength by imax!
+        self.delta_x = config.getfloat('parameters', 'xlength') / config.getfloat('parameters', 'imax') # 6 
         self.delta_y = config.getfloat('parameters', 'ylength') / config.getfloat('parameters', 'jmax') # 7
         self.final_t = config.getint('parameters', 'final_t') # 8
         self.deta_t = config.getint('parameters', 'deta_t')   # 9
@@ -143,6 +145,8 @@ class staticParameters:
         self.relax_param = config.getfloat('parameters', 'relax_param') # This is omega in C++
         self.gamma = config.getfloat('parameters', 'gamma')     # 26 This is upwind differencing parameter.
         self.p_bound = config.getint('parameters', 'p_bound')   # 27
+        # What is res_norm? It is not in the init.c reading file. 
+        # (I cannot remember where I saw this first))
         self.res_norm = config.getint('parameters', 'res_norm') # 28
         self.Ray_no = config.getfloat('parameters', Ray_no)     # 29. This is called Re in C++
         self.Pr = config.getfloat('parameters', Pr)             # 30
@@ -152,7 +156,7 @@ class staticParameters:
         self.init_x_vel_scalar = config.getfloat('parameters', init_x_vel_scalar) # 34
         self.init_y_vel_scalar = config.getfloat('parameters', init_y_vel_scalar) # 35
         self.init_press_scalar = config.getfloat('parameters', init_press_scalar) # 36
-        self.TI = config.getfloat('parameters', TI) # What the hell is TI? # 37
+        self.initial_temp = config.getfloat('parameters', TI) # 37
         self.wW = config.getint('parameters', wW) # 38
         self.wE = config.getint('parameters', wE) # 39
         self.wN = config.getint('parameters', wN) # 40

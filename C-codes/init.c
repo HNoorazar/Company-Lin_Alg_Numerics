@@ -263,7 +263,7 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
     {
      for(i=9*imax/22+1;i<=13*imax/22;i++)
        {
-	for(j=1;j<=4*jmax/11;j++)
+	    for(j=1;j<=4*jmax/11;j++)
            FLAG[i][j] = C_B;
         for(j=8*jmax/11+1;j<=jmax;j++)
            FLAG[i][j] = C_B;          
@@ -299,7 +299,7 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
                    /* flow past a cylinder/circle */
                    /*-----------------------------*/  
      mx = 20.0/41.0*jmax*dely;
-     my = mx;
+     my = mx; /* Why? */
      rad1 = 5.0/41.0*jmax*dely;
      for (i=1;i<=imax;i++)
         for (j=1;j<=jmax;j++)   
@@ -308,15 +308,16 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
            y = (j-0.5)*dely;
            if ((x-mx)*(x-mx)+(y-my)*(y-my) <= rad1*rad1)
               FLAG[i][j] = C_B;
-	  }
-    }
+	       }
+     }
 
   if(strcmp(problem,"molding")==0)
     {
                    /* circular obstacle */
                    /*-------------------*/  
+     /* Why? */
      mx = jmax*dely/2;
-     my = jmax*dely/2;
+     my = jmax*dely/2; /* Why? */
      rad1 = jmax*dely/6;
      for (i=1;i<=imax;i++)
         for (j=1;j<=jmax;j++)   
@@ -325,8 +326,8 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
            y = (j-0.5)*dely;
            if ((x-mx)*(x-mx)+(y-my)*(y-my) <= rad1*rad1)
               FLAG[i][j] = C_B;
-	  }
-    }
+	       }
+     }
 
                      /* Printing the geometry of the fluid domain */
                      /*-------------------------------------------*/

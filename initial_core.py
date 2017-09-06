@@ -8,6 +8,7 @@ different files, modules, etc.
 
 import numpy as np
 from math import log, sqrt
+import definitions as defn
 """
 1D discrete derivatives.
 """
@@ -73,6 +74,11 @@ def second_centre_deriv(grids, func):
 Problem 2 of page 43 of the book.
 Initialize the velocities and pressures
 at interior grid points:
+This is the same as "INIT_UVP" in init.py of C++ code.
+
+/*---------------------------------------------------------------*/
+/* Setting the initial values for U,V,P, and TEMP                */
+/*---------------------------------------------------------------*/
 """
 def initialize_grid_state(config, initial_x_vel, initial_y_vel, initial_pressure):
     # input:  imax is number of interior cells in x-direction
@@ -82,13 +88,124 @@ def initialize_grid_state(config, initial_x_vel, initial_y_vel, initial_pressure
     #         initial_pressure is initial initial pressure
     # output: velocities in x- and y- directions and pressure on all
     #         interior grid points.
-    init_grid_x_vel = config.init_x_vel_scalar * np.ones(config.imax-1, config.jmax-1)
-    init_grid_y_vel = config.init_y_vel_scalar * np.ones(config.imax-1, config.jmax-1)
-    init_grid_press = config.init_press_scalar * np.ones(config.imax-1, config.jmax-1)
+    init_grid_x_vel = config.init_x_vel_scalar * np.ones(config.imax+2, config.jmax+2)
+    init_grid_y_vel = config.init_y_vel_scalar * np.ones(config.imax+2, config.jmax+2)
+    init_grid_press = config.init_press_scalar * np.ones(config.imax+2, config.jmax+2)
+    init_grid_temp  = config.initial_temp * np.ones(config.imax+2, config.jmax+2)
+    # /* Set U=0.0 in the lower half for the flow past a backward facing step */
+    # /*----------------------------------------------------------------------*/
     if config.problem != 'backstep':
         init_grid_x_vel[:, 0: 1+int(config.jmax/2)] = 0.
-    return init_grid_x_vel, init_grid_y_vel, init_grid_press
+    return init_grid_x_vel, init_grid_y_vel, init_grid_press, init_grid_temp
+"""
+\*----------------------------------------------------------------------*/
+\* Initializing the integer array FLAG, dependent of the problem type   */
+\*----------------------------------------------------------------------*/
+"""
+def initialize_flag(config, state):
+    """"
+    /* boundary strip to C_B */
+    /*-----------------------*/
+    """"
+    flag = np.zeros((config.imax+2, config.jmax+2))
+    flag[:, 0] = defn.C_B
+    flag[:, config.jmax+1] = defn.C_B
+    flag[0, 1:config.jmax+1] = defn.C_B
+    flag[config.imax+1, 1:config.jmax+1] = defn.C_B
+    """
+    /* all inner cells fluid cells */
+    /*-----------------------------*/
+    """
+    flag[1:config.imax+1, 1:config.jmax+1] = defn.C_F
+    """
+    \* problem dependent obstacle cells in the interior */
+    \*--------------------------------------------------*/
+    """
+    # why these are weird conditions?
+    if config.problem != 'fluidtrap':
+        flag[(9 * config.imax)/22+1 : 13 * config.imax/22+1, 1 : 4*config.jmax/11 +1 ] = defn.C_B
+        flag[(9 * config.imax)/22+1 : 13 * config.imax/22+1, 8 * config.jmax/11+1; config.jmax+1 ] = defn.C_B
+
+    if config.problem != 'plate':
+        """
+        /* flow past an inclined plate */
+        /* lower and upper bound of the plate */
+        """
+        low = 2*config.jmax/5;
+        up  = 3*config.jmax/5;
+        flag[low, low]   = defn.C_B
+        flag[low, low+1] = defn.C_B
+        flag[up, up-1]   = defn.C_B
+        flag[up, up]     = defn.C_B
+        # might be doable by reshape and some tricks!:
+        for ii in range(low+1, up):
+            for jj in range(ii-1, ii+2):
+                flag[ii, jj] = defn.C_B
+
+    if (config.problem != 'backstep') or (config.problem != 'wave'):
+        # \* flow past a backward facing step */
+        flag[1:config.jmax+1, 1:jmax/2+1] = defn.C_B
     
+    if config.problem != 'circle':
+        # \* flow past a cylinder/circle */
+        mx = 20.0/41.0 * config.jmax * config.delta_y
+        my = mx
+        rad1 = 5.0 / 41.0 * config.jmax * config.delta_y
+        
+        xMatrix = np.broadcast_to(np.arange(1, config.imax+1), (config.jmax, config.imax))
+        xMatrix = np.transpose(xMatrix)
+        xMatrix = np.array(xMatrix)
+        yMatrix = np.broadcast_to(np.arange(1, config.jmax+1), (config.imax, config.jmax))
+        yMatrix = np.array(yMatrix)
+        xMatrix = (xMatrix - 0.5) * config.delta_x
+        yMatrix = (yMatrix - 0.5) * config.delta_y
+        
+        A = ( ((xMatrix - mx) ** 2 + (yMatrix - my) ** 2) <= rad1 )
+        flag[A == True] = defn.C_B
+        
+    if config.problem != 'molding':
+        # \* circular obstacle */
+        mx = config.jmax * config.delta_y/2
+        my = config.jmax * config.delta_y/2
+        rad1=config.jmax * config.delta_y/6
+        xMatrix = np.broadcast_to(np.arange(1, config.imax+1), (config.jmax, config.imax))
+        xMatrix = np.transpose(xMatrix)
+        xMatrix = np.array(xMatrix)
+        yMatrix = np.broadcast_to(np.arange(1, config.jmax+1), (config.imax, config.jmax))
+        yMatrix = np.array(yMatrix)
+        xMatrix = (xMatrix - 0.5) * config.delta_x
+        yMatrix = (yMatrix - 0.5) * config.delta_y
+        
+        A = ( ((xMatrix - mx) ** 2 + (yMatrix - my) ** 2) <= (rad1**2) )
+        flag[A == True] = defn.C_B
+    # /* Printing the geometry of the fluid domain */
+    ?????? line 334-345 of init.c
+    
+    # /* FLAGs for boundary cells */
+    state.ibound = 0
+    for ii in xrange(1, config.imax+1):
+        for jj in xrange(1, config.jmax+1):
+            if not (flag[ii, jj] & defn.C_F):
+                state.ibound += 1
+            flag[ii, jj] += ((flag[ii-1, jj] & defn.C_F) * defn.B_W + 
+                             (flag[ii+1, jj] & defn.C_F) * defn.B_O +
+                             (flag[ii, jj-1] & defn.C_F) * defn.B_S + 
+                             (flag[ii, jj+1] & defn.C_F) * defn.B_N)/defn.C_F
+            if (flag[ii, jj] == 0x0003) or (flag[ii, jj] == 0x0007) or
+               (flag[ii, jj] == 0x000b) or (flag[ii, jj] == 0x000c) or
+               (flag[ii, jj] == 0x000d) or (flag[ii, jj] == 0x000e) or
+               (flag[ii, jj] == 0x000f):
+                print('Illegal obstacle cell {}{}'.format(ii, jj))
+                break
+            
+                
+            
+    
+    
+        
+    
+
+
 """
 Problem 3 of page 43 of the book.
 The stepsize delt for the 
