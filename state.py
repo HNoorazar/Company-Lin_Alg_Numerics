@@ -6,4 +6,6 @@ class GridState:
         self.x_grid_vel = x_velocities
         self.y_grid_vel = y_grid_vel
         self.pressures = pressures
+        self.temp = temp
+        self.flag = flag
         self.ibound = ibound

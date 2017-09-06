@@ -9,6 +9,7 @@ different files, modules, etc.
 import numpy as np
 from math import log, sqrt
 import definitions as defn
+import IO as IO
 """
 1D discrete derivatives.
 """
@@ -107,24 +108,26 @@ def initialize_flag(config, state):
     /* boundary strip to C_B */
     /*-----------------------*/
     """"
-    flag = np.zeros((config.imax+2, config.jmax+2))
-    flag[:, 0] = defn.C_B
-    flag[:, config.jmax+1] = defn.C_B
-    flag[0, 1:config.jmax+1] = defn.C_B
-    flag[config.imax+1, 1:config.jmax+1] = defn.C_B
+    state.flag = np.zeros((config.imax+2, config.jmax+2))
+    state.flag[:, 0] = defn.C_B
+    state.flag[:, config.jmax+1] = defn.C_B
+    state.flag[0, 1:config.jmax+1] = defn.C_B
+    state.flag[config.imax+1, 1:config.jmax+1] = defn.C_B
     """
     /* all inner cells fluid cells */
     /*-----------------------------*/
     """
-    flag[1:config.imax+1, 1:config.jmax+1] = defn.C_F
+    state.flag[1:config.imax+1, 1:config.jmax+1] = defn.C_F
     """
     \* problem dependent obstacle cells in the interior */
     \*--------------------------------------------------*/
     """
     # why these are weird conditions?
     if config.problem != 'fluidtrap':
-        flag[(9 * config.imax)/22+1 : 13 * config.imax/22+1, 1 : 4*config.jmax/11 +1 ] = defn.C_B
-        flag[(9 * config.imax)/22+1 : 13 * config.imax/22+1, 8 * config.jmax/11+1; config.jmax+1 ] = defn.C_B
+        low = (9 * config.imax / 22) + 1 
+        up  = (13* config.imax / 22) + 1
+        state.flag[low : up, 1 : 4*config.jmax/11 +1 ] = defn.C_B
+        state.flag[low : up, 8 * config.jmax/11+1; config.jmax+1 ] = defn.C_B
 
     if config.problem != 'plate':
         """
@@ -133,18 +136,18 @@ def initialize_flag(config, state):
         """
         low = 2*config.jmax/5;
         up  = 3*config.jmax/5;
-        flag[low, low]   = defn.C_B
-        flag[low, low+1] = defn.C_B
-        flag[up, up-1]   = defn.C_B
-        flag[up, up]     = defn.C_B
+        state.flag[low, low]   = defn.C_B
+        state.flag[low, low+1] = defn.C_B
+        state.flag[up, up-1]   = defn.C_B
+        state.flag[up, up]     = defn.C_B
         # might be doable by reshape and some tricks!:
         for ii in range(low+1, up):
             for jj in range(ii-1, ii+2):
-                flag[ii, jj] = defn.C_B
+                state.flag[ii, jj] = defn.C_B
 
     if (config.problem != 'backstep') or (config.problem != 'wave'):
         # \* flow past a backward facing step */
-        flag[1:config.jmax+1, 1:jmax/2+1] = defn.C_B
+        state.flag[1:config.jmax+1, 1:jmax/2+1] = defn.C_B
     
     if config.problem != 'circle':
         # \* flow past a cylinder/circle */
@@ -161,7 +164,7 @@ def initialize_flag(config, state):
         yMatrix = (yMatrix - 0.5) * config.delta_y
         
         A = ( ((xMatrix - mx) ** 2 + (yMatrix - my) ** 2) <= rad1 )
-        flag[A == True] = defn.C_B
+        state.flag[A == True] = defn.C_B
         
     if config.problem != 'molding':
         # \* circular obstacle */
@@ -177,10 +180,20 @@ def initialize_flag(config, state):
         yMatrix = (yMatrix - 0.5) * config.delta_y
         
         A = ( ((xMatrix - mx) ** 2 + (yMatrix - my) ** 2) <= (rad1**2) )
-        flag[A == True] = defn.C_B
+        state.flag[A == True] = defn.C_B
     # /* Printing the geometry of the fluid domain */
-    ?????? line 334-345 of init.c
-    
+    print "nGeometry of the fluid domain:\n\n"
+    print ""
+    print ""
+    for jj in sorted(range(0, config.jmax+1), reverse=True):
+        for ii in range(0,config.imax+1):
+            if not (flag[ii, jj] & defn.C_F):
+                print "**"
+            else:
+                print "  "
+        print "\n"
+    print "\n"
+    print "\n"
     # /* FLAGs for boundary cells */
     state.ibound = 0
     for ii in xrange(1, config.imax+1):
@@ -196,14 +209,22 @@ def initialize_flag(config, state):
                (flag[ii, jj] == 0x000d) or (flag[ii, jj] == 0x000e) or
                (flag[ii, jj] == 0x000f):
                 print('Illegal obstacle cell {}{}'.format(ii, jj))
-                break
-            
-                
-            
-    
-    
-        
-    
+                break # the C++ code has exit(0) here.  
+                      # I'm still not sure what that is supposed to do!
+
+def write_state(state, filename):
+    system_state = {'x_grid_vel': state.x_grid_vel,
+                    'y_grid_vel': state.y_grid_vel,
+                    'pressures': state.pressures,
+                    'temp': state.temp,
+                    'flag': state.flag
+                    }
+    try:
+        IO.save_matrix(filename, system_state)
+    except:
+        print("ERROR: could not write matrix file "+filename)                    
+
+
 
 
 """
@@ -248,11 +269,11 @@ Computation of F and G according to (3.36) and (3.37).
 At the boundary the formulas (3.42) must be applied.
 """
 # I might be able to vectorize this! look @ it closely!!!
-def compute_FG(config, state, flag, temp, F, G):
+def compute_FG(config, state, temp, F, G):
     for ii in range(1, config.imax):
         for jj in range(1, config.jmax+1):
-            if (( ((flag[ii, jj]   & C_F) and (flag[ii, jj]   < C_E)) and
-               ((   flag[ii+1, jj] & C_F) and (flag[ii+1, jj] < C_E)) ):
+            if (( ((state.flag[ii, jj]   & C_F) and (state.flag[ii, jj]   < C_E)) and
+               ((   state.flag[ii+1, jj] & C_F) and (state.flag[ii+1, jj] < C_E)) ):
                 DU2DX = (
                          (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii+1, jj]) * 
                          (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii+1, jj]) +
@@ -293,8 +314,8 @@ def compute_FG(config, state, flag, temp, F, G):
     for ii in xrange(1, config.imax+1):
         for jj in xrange(1, config.jmax):
             # /* only if both adjacent cells are fluid cells */
-            if( ((flag[ii, jj]   & C_F) and (flag[ii, jj]   < C_E)) and
-                ((flag[ii, jj+1] & C_F) and (flag[ii, jj+1] < C_E)) ):
+            if( ((state.flag[ii, jj]   & C_F) and (state.flag[ii, jj]   < C_E)) and
+                ((state.flag[ii, jj+1] & C_F) and (state.flag[ii, jj+1] < C_E)) ):
                 
                 DUVDX = (
                          (state.x_grid_vel[ii, jj] + state.x_grid_vel[ii, jj+1]) * 
@@ -349,10 +370,10 @@ def compute_FG(config, state, flag, temp, F, G):
 Problem 7 of the book.
 Computation ofthe right-hand side of the pressure equation (3.38).
 """
-def compute_RHS(config, F, G, RHS, flag):
+def compute_RHS(config, state, F, G, RHS):
     for ii in xrange(1, config.imax+1):
         for jj in xrange(1, config.jmax+1):
-            if ((flag[ii, jj] & C_F) and (flag[ii, jj] < 0x0100))  
+            if ((state.flag[ii, jj] & C_F) and (state.flag[ii, jj] < 0x0100))  
         # /* only for fluid and non-surface cells */
                 RHS[ii, jj] = (
                                (F[ii, jj] - F[ii-1, jj]) / config.delta_x + 
@@ -385,7 +406,7 @@ set according to (3.48) prior to
 each iteration step.
 """
 config.iteration_max
-def POISSON(config, state, RHS, flag, press_residual, ifull):
+def POISSON(config, state, RHS, press_residual, ifull):
     # config.res_norm = press_residual \* If press_residual is a parameter
     # provided by user we can use config. but it that will be changing during
     # dynamics then it has to be taken out of config. I still do not know.
@@ -393,10 +414,10 @@ def POISSON(config, state, RHS, flag, press_residual, ifull):
     p0 = 0.0
     rdx2 = 1./(config.delta_x ** 2)
     rdy2 = 1./(config.delta_y ** 2)
-    beta_2 = -config.relax_param /(2.0*(rdx2+rdy2))
+    beta_2 = -config.relax_param / (2.0*(rdx2+rdy2))
     for ii in xrange(1, config.imax+1):
         for jj in xrange(1, config.jmax+1):
-            if (flag[ii, jj] & C_F):
+            if (state.flag[ii, jj] & C_F):
                 p0 += (state.pressures[ii,jj] ** 2)
     p0 = sqrt(p0/ifull)
     if p0 < 0.0001:
@@ -416,7 +437,7 @@ def POISSON(config, state, RHS, flag, press_residual, ifull):
             for ii in xrange(1, config.imax+1):
                 for jj in xrange(1, config.jmax+1):
                     # /* five point star for interior fluid cells */
-                    if (flag[ii, jj] == 0x001f):
+                    if (state.flag[ii, jj] == 0x001f):
                         state.pressures[ii, jj] = (1. - config.relax_param) * state.pressures[ii, jj] - 
                                                   beta_2 * 
                                                   (
@@ -427,7 +448,7 @@ def POISSON(config, state, RHS, flag, press_residual, ifull):
                                                     RHS[ii, jj]
                                                   )
                     # /* modified star near boundary */
-                    elif ((flag[ii, jj] & C_F) and (flag[ii, jj] < 0x0100)):
+                    elif ((state.flag[ii, jj] & C_F) and (state.flag[ii, jj] < 0x0100)):
                         beta_mod = -config.relax_param/((eps_E + eps_W) * rdx2 + (eps_N + eps_S) * rdy2);
                         state.pressures[ii, jj] = (1. - config.relax_param) * state.pressures[ii, jj] -
                                    beta_mod * ( (eps_E * state.pressures[ii+1, jj] + 
