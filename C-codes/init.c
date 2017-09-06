@@ -257,8 +257,8 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
      for(j=1;j<=jmax;j++)
         FLAG[i][j] = C_F;
 
-                   /* problem dependent obstacle cells in the interior */
-                   /*--------------------------------------------------*/
+                  /* problem dependent obstacle cells in the interior */
+                  /*--------------------------------------------------*/
   if(strcmp(problem,"fluidtrap")==0)
     {
      for(i=9*imax/22+1;i<=13*imax/22;i++)
@@ -269,7 +269,7 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
            FLAG[i][j] = C_B;          
        }
     }
-
+  /* -------------------------- */
   if(strcmp(problem,"plate")==0)
     {
                    /* flow past an inclined plate */
@@ -284,7 +284,7 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
         for (j=i-1;j<=i+1;j++)
            FLAG[i][j] = C_B;
     }
-
+  /* ---------------------------------------------------------- */
   if(strcmp(problem,"backstep")==0 || strcmp(problem,"wave")==0)
     {
                     /* flow past a backward facing step */
@@ -293,14 +293,14 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
         for (j=1;j<=jmax/2;j++)
            FLAG[i][j] = C_B;
     }
-
+  /* -------------------------- */
   if(strcmp(problem,"circle")==0)
     {
                    /* flow past a cylinder/circle */
                    /*-----------------------------*/  
      mx = 20.0/41.0*jmax*dely;
-     my = mx; /* Why? */
-     rad1 = 5.0/41.0*jmax*dely;
+     my = mx; /* Why? Why it is not just using mx? */
+     rad1 = 5.0/41.0*jmax*dely; /* why this is not just mx/4? */
      for (i=1;i<=imax;i++)
         for (j=1;j<=jmax;j++)   
           {
@@ -362,9 +362,9 @@ void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
            case 0x000f:{           
                      printf("Illegal obstacle cell [%d][%d]\n",i,j);
                      exit(0);
-                    }  
-	 }
-      }
+                       }  
+	                       }
+                         }
 }
 
 

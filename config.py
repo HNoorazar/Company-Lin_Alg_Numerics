@@ -147,7 +147,7 @@ class staticParameters:
         self.p_bound = config.getint('parameters', 'p_bound')   # 27
         # What is res_norm? It is not in the init.c reading file. 
         # (I cannot remember where I saw this first))
-        self.res_norm = config.getint('parameters', 'res_norm') # 28
+        # self.res_norm = config.getint('parameters', 'res_norm') # 28
         self.Ray_no = config.getfloat('parameters', Ray_no)     # 29. This is called Re in C++
         self.Pr = config.getfloat('parameters', Pr)             # 30
         self.beta = config.getfloat('parameters',beta) # 31
@@ -156,7 +156,7 @@ class staticParameters:
         self.init_x_vel_scalar = config.getfloat('parameters', init_x_vel_scalar) # 34
         self.init_y_vel_scalar = config.getfloat('parameters', init_y_vel_scalar) # 35
         self.init_press_scalar = config.getfloat('parameters', init_press_scalar) # 36
-        self.initial_temp = config.getfloat('parameters', TI) # 37
+        self.init_temp_scalar = config.getfloat('parameters', init_temp_scalar) # 37
         self.wW = config.getint('parameters', wW) # 38
         self.wE = config.getint('parameters', wE) # 39
         self.wN = config.getint('parameters', wN) # 40

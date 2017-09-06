@@ -81,18 +81,18 @@ This is the same as "INIT_UVP" in init.py of C++ code.
 /* Setting the initial values for U,V,P, and TEMP                */
 /*---------------------------------------------------------------*/
 """
-def initialize_grid_state(config, initial_x_vel, initial_y_vel, initial_pressure):
+def initialize_grid_state(config):
     # input:  imax is number of interior cells in x-direction
     #         jmax is number of interior cells in y-direction
-    #         initial_x_vel is initial velocity in x-direction
-    #         initial_y_vel is initial velocity in y-direction
-    #         initial_pressure is initial initial pressure
-    # output: velocities in x- and y- directions and pressure on all
+    #         initial_x_vel_scalar is initial velocity in x-direction
+    #         initial_y_vel_scalar is initial velocity in y-direction
+    #         initial_press_scalar is initial initial pressure
+    # output: velocities in x- and y- directions, pressure and temperature on all
     #         interior grid points.
     init_grid_x_vel = config.init_x_vel_scalar * np.ones(config.imax+2, config.jmax+2)
     init_grid_y_vel = config.init_y_vel_scalar * np.ones(config.imax+2, config.jmax+2)
     init_grid_press = config.init_press_scalar * np.ones(config.imax+2, config.jmax+2)
-    init_grid_temp  = config.initial_temp * np.ones(config.imax+2, config.jmax+2)
+    init_grid_temp  = config.initial_temp_scalar * np.ones(config.imax+2, config.jmax+2)
     # /* Set U=0.0 in the lower half for the flow past a backward facing step */
     # /*----------------------------------------------------------------------*/
     if config.problem != 'backstep':
@@ -104,11 +104,11 @@ def initialize_grid_state(config, initial_x_vel, initial_y_vel, initial_pressure
 \*----------------------------------------------------------------------*/
 """
 def initialize_flag(config, state):
+    state.flag = np.zeros((config.imax+2, config.jmax+2))
     """"
     /* boundary strip to C_B */
     /*-----------------------*/
     """"
-    state.flag = np.zeros((config.imax+2, config.jmax+2))
     state.flag[:, 0] = defn.C_B
     state.flag[:, config.jmax+1] = defn.C_B
     state.flag[0, 1:config.jmax+1] = defn.C_B
@@ -119,15 +119,15 @@ def initialize_flag(config, state):
     """
     state.flag[1:config.imax+1, 1:config.jmax+1] = defn.C_F
     """
-    \* problem dependent obstacle cells in the interior */
-    \*--------------------------------------------------*/
+        \* problem dependent obstacle cells in the interior */
+        \*--------------------------------------------------*/
     """
     # why these are weird conditions?
     if config.problem != 'fluidtrap':
-        low = (9 * config.imax / 22) + 1 
-        up  = (13* config.imax / 22) + 1
-        state.flag[low : up, 1 : 4*config.jmax/11 +1 ] = defn.C_B
-        state.flag[low : up, 8 * config.jmax/11+1; config.jmax+1 ] = defn.C_B
+        low = 1 + (9 * config.imax / 22) 
+        up  = (13* config.imax / 22) 
+        state.flag[low : up+1, 1 : 4*config.jmax/11 + 1 ] = defn.C_B
+        state.flag[low : up+1, (8*config.jmax/11)+1 : config.jmax+1 ] = defn.C_B
 
     if config.problem != 'plate':
         """
@@ -141,19 +141,20 @@ def initialize_flag(config, state):
         state.flag[up, up-1]   = defn.C_B
         state.flag[up, up]     = defn.C_B
         # might be doable by reshape and some tricks!:
+        # Toeplitz and/or band stuff.
         for ii in range(low+1, up):
             for jj in range(ii-1, ii+2):
                 state.flag[ii, jj] = defn.C_B
 
     if (config.problem != 'backstep') or (config.problem != 'wave'):
-        # \* flow past a backward facing step */
+              # \* flow past a backward facing step */
         state.flag[1:config.jmax+1, 1:jmax/2+1] = defn.C_B
     
     if config.problem != 'circle':
-        # \* flow past a cylinder/circle */
+       # \* flow past a cylinder/circle */
         mx = 20.0/41.0 * config.jmax * config.delta_y
         my = mx
-        rad1 = 5.0 / 41.0 * config.jmax * config.delta_y
+        rad1 = mx / 4.
         
         xMatrix = np.broadcast_to(np.arange(1, config.imax+1), (config.jmax, config.imax))
         xMatrix = np.transpose(xMatrix)
@@ -194,7 +195,7 @@ def initialize_flag(config, state):
         print "\n"
     print "\n"
     print "\n"
-    # /* FLAGs for boundary cells */
+                  # \* flags for boundary cells */
     state.ibound = 0
     for ii in xrange(1, config.imax+1):
         for jj in xrange(1, config.jmax+1):
@@ -211,6 +212,8 @@ def initialize_flag(config, state):
                 print('Illegal obstacle cell {}{}'.format(ii, jj))
                 break # the C++ code has exit(0) here.  
                       # I'm still not sure what that is supposed to do!
+    return state
+
 
 def write_state(state, filename):
     system_state = {'x_grid_vel': state.x_grid_vel,
@@ -224,9 +227,6 @@ def write_state(state, filename):
     except:
         print("ERROR: could not write matrix file "+filename)                    
 
-
-
-
 """
 Problem 3 of page 43 of the book.
 The stepsize delt for the 
@@ -236,6 +236,7 @@ In case of neg- ative tau
 the stepsize read in READ-PARAMETER 
 is to be use
 """
+
 def compute_time_step(config,
                       x_grid_vel, y_grid_vel, 
                       Reynolds):

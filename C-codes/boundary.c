@@ -21,7 +21,7 @@ void SETBCOND(REAL **U,REAL **V,REAL **P,REAL **TEMP,int **FLAG,
     if(wW == 1 ){ /* slip */
       U[0][j] = 0.0;       /* u = 0     */
       V[0][j] = V[1][j];   /* dv/dn = 0 */
-    }
+                }
     if(wW == 2 ){ /* no-slip   */
       U[0][j] = 0.0;             /* u = 0     */
       V[0][j] = (-1.0)*V[1][j];  /* v=0 at the boundary by averaging */
@@ -35,7 +35,7 @@ void SETBCOND(REAL **U,REAL **V,REAL **P,REAL **TEMP,int **FLAG,
       V[0][j] = V[imax-1][j]; /* left and right cells    */
       V[1][j] = V[imax][j];   /* are overlapping         */
       P[1][j] = P[imax][j]; 
-    }
+                }
 
     TEMP[0][j] = TEMP[1][j];  /* dT/dn = 0 */
 
@@ -57,25 +57,25 @@ void SETBCOND(REAL **U,REAL **V,REAL **P,REAL **TEMP,int **FLAG,
     }
 
    TEMP[imax+1][j] = TEMP[imax][j];
-  }
+                      }
 
   for(i=0;i<=imax+1;i++){  /* northern and southern boundary */
     if(wN == 1 ){
       V[i][jmax] = 0.0;
       U[i][jmax+1] = U[i][jmax];
-    }
+                 }
     if(wN == 2 ){ 
       V[i][jmax] = 0.0;
       U[i][jmax+1] = (-1.0)*U[i][jmax];
-    }
+                }
     if(wN == 3){ 
       V[i][jmax] = V[i][jmax-1];
       U[i][jmax+1] = U[i][jmax];
-    }
+                }
     if(wN == 4 ){ 
       V[i][jmax] = V[i][1];
       U[i][jmax+1] = U[i][2];
-    }
+                }
 
     TEMP[i][0] = TEMP[i][1];
 
@@ -86,11 +86,11 @@ void SETBCOND(REAL **U,REAL **V,REAL **P,REAL **TEMP,int **FLAG,
     if(wS == 2 ){ 
       V[i][0] = 0.0;
       U[i][0] = (-1.0)*U[i][1];
-    }
+                 }
     if(wS == 3){ 
       V[i][0] = V[i][1];
       U[i][0] = U[i][1];
-    }
+                }
     if(wS == 4 ){ 
       V[i][0] = V[i][jmax-1];
       U[i][0] = U[i][jmax-1];
