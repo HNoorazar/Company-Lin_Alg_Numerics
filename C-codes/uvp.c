@@ -190,7 +190,7 @@ int POISSON(REAL **P,REAL **RHS,int **FLAG,
                           beta_mod*( (eps_E*P[i+1][j]+eps_W*P[i-1][j])*rdx2 +
                                      (eps_N*P[i][j+1]+eps_S*P[i][j-1])*rdy2 -
                                      RHS[i][j]);
-	      }
+	                                                              }
                          /* computation of residual */
                          /*-------------------------*/
        *res = 0.0;
@@ -205,16 +205,14 @@ int POISSON(REAL **P,REAL **RHS,int **FLAG,
                         (eps_N*(P[i][j+1]-P[i][j]) -
                          eps_S*(P[i][j]-P[i][j-1])) * rdy2  -  RHS[i][j];
                  *res += add*add;
- 	        }
-
+ 	             }
+        /* how the hell should I know if the following is in the for lopps or not? */
         *res = sqrt((*res)/ifull)/p0;
                          /* convergence? */
                          /*--------------*/
-
         if (*res<eps)
            return iter;
-       }
-
+       } /* started at line 176 */
     else if (p_bound == 2)
       {
                          /* copy values at external boundary */
@@ -246,7 +244,6 @@ int POISSON(REAL **P,REAL **RHS,int **FLAG,
 		case B_NW:{ P[i][j] = 0.5*(P[i][j+1]+P[i-1][j]); break;}
 		default:                                         break;
 		}
-	
 	/* relaxation for fluid cells */
 	/*----------------------------*/
 	for (i=1;i<=imax;i+=1)
@@ -255,7 +252,6 @@ int POISSON(REAL **P,REAL **RHS,int **FLAG,
 	      P[i][j] = (1.-omg)*P[i][j] - 
 		beta_2*((P[i+1][j]+P[i-1][j])*rdx2 +
 			(P[i][j+1]+P[i][j-1])*rdy2 - RHS[i][j]);
-	
 	/* computation of residual */
 	/*-------------------------*/
 	*res = 0.0;
@@ -269,11 +265,9 @@ int POISSON(REAL **P,REAL **RHS,int **FLAG,
 		  (P[i][j+1]-2*P[i][j]+P[i][j-1])*rdy2-RHS[i][j];
 		*res += add*add;
 	      }
-	
         *res = sqrt((*res)/ifull)/p0;
 	/* convergence? */
 	/*--------------*/
-	
         if (*res<eps)
 	  return iter;
       }
@@ -314,11 +308,11 @@ void ADAP_UV (REAL **U,REAL **V,REAL **F,REAL **G,REAL **P,int **FLAG,
 /*------------------------------------------------------------*/
 void COMP_delt(REAL *delt, REAL t, int imax, int jmax, REAL delx, REAL dely,
                REAL **U, REAL **V, REAL Re, REAL Pr, REAL tau, int *write,
-               REAL del_trace, REAL del_inj, REAL del_streak, REAL del_vec){
+               REAL del_trace, REAL del_inj, REAL del_streak, REAL del_vec)
+  {
   int i, j;
   REAL umax, vmax, deltu, deltv, deltRePr; 
   REAL t_trace, t_inj, t_streak, t_vec, t_neu; 
-
  /* delt satisfying CFL conditions */
  /*--------------------------------*/
   if(tau >= 1.0e-10){ /* else no time stepsize control */
@@ -326,7 +320,6 @@ void COMP_delt(REAL *delt, REAL t, int imax, int jmax, REAL delx, REAL dely,
     for(i=0; i<=imax+1; i++) for(j=1; j<=jmax+1; j++)
       if(fabs(U[i][j]) > umax)
         umax = fabs(U[i][j]);
-
     for(i=1; i<=imax+1; i++) for(j=0; j<=jmax+1; j++)
       if(fabs(V[i][j]) > vmax)
         vmax = fabs(V[i][j]);
@@ -342,8 +335,7 @@ void COMP_delt(REAL *delt, REAL t, int imax, int jmax, REAL delx, REAL dely,
       if(deltv<deltRePr) *delt = deltv;
       else 	       *delt = deltRePr;
     *delt = tau*(*delt); /* multiply by safety factor */
-  }
-
+                     } /* started at line 317 */
  /* look if some data has to be written to a file in the next time step */ 
  /*---------------------------------------------------------------------*/
   *write = 0;

@@ -74,10 +74,9 @@ def set_boun_cond(state, config):
 		state.x_grid_vel[:, 1] = state.x_grid_vel[:, config.jmax]
 		state.pressures[:, 1] = state.pressures[:, config.jmax]
 	state.temp[:, config.jmax+1] = state.temp[:, config.jmax]
-
-#  /* setting the boundary values at inner obstacle cells */
-#  /*                  (only no-slip)                     */
-#  /*-----------------------------------------------------*/
+    #  /* setting the boundary values at inner obstacle cells */
+    #  /*                  (only no-slip)                     */
+    #  /*-----------------------------------------------------*/
     for ii in xrange(0, imax+1):
         for jj in xrange(0, jmax+1):
             if (flag[ii, jj] and 0x000f): # /* The mask 0x000f filters the */

@@ -9,3 +9,6 @@ class GridState:
         self.temp = temp
         self.flag = flag
         self.ibound = ibound
+        self.F = F
+        self.G = G
+        self.current_time = current_time

@@ -12,7 +12,6 @@ class staticParameters:
         self.delta_y = 0. # length delta_x of one cell in y-direction
 
         # time criteria
-        self.current_time = 0. # current time. [Do we need to remove this from here?]
         self.final_t = 0. # Final time
         self.deta_t = 0. # time step size
         self.safety_tau = 0. # Safety factor for time step size control \tau
@@ -149,8 +148,8 @@ class staticParameters:
         # (I cannot remember where I saw this first))
         # self.res_norm = config.getint('parameters', 'res_norm') # 28
         self.Ray_no = config.getfloat('parameters', Ray_no)     # 29. This is called Re in C++
-        self.Pr = config.getfloat('parameters', Pr)             # 30
-        self.beta = config.getfloat('parameters',beta) # 31
+        self.Pr = config.getfloat('parameters', Pr)             # 30 Prandtl number
+        self.beta = config.getfloat('parameters', beta) # 31
         self.GX = config.getfloat('parameters', GX)    # 32
         self.GY = config.getfloat('parameters', GY)    # 33
         self.init_x_vel_scalar = config.getfloat('parameters', init_x_vel_scalar) # 34

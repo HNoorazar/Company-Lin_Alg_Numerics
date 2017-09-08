@@ -20,7 +20,8 @@ int READ_PARAMETER(char *Inputfile,
 		   int *itermax,REAL *eps,REAL *omg,REAL *gamma,int *p_bound,
 		   REAL *Re,REAL *Pr,REAL *beta,REAL *GX,REAL *GY,
 		   REAL *UI,REAL *VI,REAL *TI,
-		   int *wW,int *wE,int *wN,int *wS){
+		   int *wW,int *wE,int *wN,int *wS)
+{
   char c;
   FILE *fp;
 
