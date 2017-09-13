@@ -33,12 +33,12 @@ int main(int argc, char *Inputfile[])
   /* Stop if problem type or inputfile are not defined  */       
   /*----------------------------------------------------*/
   if( READ_PARAMETER(Inputfile[1],problem,
-                     &xlength,&ylength,&imax,&jmax,&delx,&dely,
+                     &xlength, &ylength, &imax, &jmax, &delx, &dely,
 		     &t_end,&delt,&tau, 
-                     &del_trace,&del_inj,&del_streak,&del_vec,
-                     vecfile,tracefile,streakfile,
-                     infile,outfile,
-                     &N,&pos1x,&pos1y,&pos2x,&pos2y,
+                     &del_trace, &del_inj, &del_streak, &del_vec,
+                     vecfile, tracefile, streakfile,
+                     infile, outfile,
+                     &N, &pos1x, &pos1y, &pos2x, &pos2y,
 		     &itermax,&eps,&omg,&gamma,&p_bound,
 		     &Re,&Pr,&beta,&GX,&GY,&UI,&VI,&TI,
 		     &wW,&wE,&wN,&wS) != 0 ) return(1); 

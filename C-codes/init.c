@@ -192,11 +192,16 @@ int READ_PARAMETER(char *Inputfile,
     printf("wS must be 1,2,3, or 4\n");
     return(1);
   }
-  if (((*wW==4) && (*wE!=4)) || (*wW!=4) && (*wE==4)){
+                    /* I inserted a pair of parentheses here */
+                    /* it originally was (((*wW==4) && (*wE!=4)) || (*wW!=4) && (*wE==4)) */
+                    /* by originally I mean when I ran it,*/
+                    /* I got some warnings, maybe I had erased them accidentally in the first place. */
+                    /* Ask matt for the code again. */
+  if (((*wW==4) && (*wE!=4)) || ((*wW!=4) && (*wE==4))){
     printf("Periodic boundary conditions need wW=wE=4\n");
     return(1);
   }
-  if (((*wS==4) && (*wN!=4)) || (*wS!=4) && (*wN==4)){
+  if (((*wS==4) && (*wN!=4)) || ((*wS!=4) && (*wN==4))){
     printf("Periodic boundary conditions need wS=wN=4\n");
     return(1);
   }
