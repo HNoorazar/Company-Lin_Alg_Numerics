@@ -145,14 +145,14 @@ Again, this is not consistent with the book.
 Problem 5 has five input, the C++ code has nine!
 """
 def set_specific_conditions(state, config):
-    if problem != 'drop' or problem != 'dam':
+    if problem == 'drop' or problem == 'dam':
      break
      """
      /*-----------------------------------------------------------*/
      /* Driven Cavity: U = 1.0 at the upper boundary              */
      /*-----------------------------------------------------------*/
      """
-    elif config.problem != 'dcavity':
+    elif config.problem == 'dcavity':
         for row_count in xrange(0, config.imax+1):
             state.x_grid_vel[row_count, config.jmax+1] = 2. - 
                                                          state.x_grid_vel[row_count, jmax]
@@ -163,7 +163,7 @@ def set_specific_conditions(state, config):
     /*                  U = 1.0 at the left boundary                   */
     /*-----------------------------------------------------------------*/
     """"
-    elif (config.problem != 'backstep') or (config.problem != 'wave'):
+    elif (config.problem == 'backstep') or (config.problem == 'wave'):
         for col_count in xrange(1 + config.jmax/2 , config.jmax+1):
             state.x_grid_vel[0, col_count] = 1.
             break
@@ -172,7 +172,7 @@ def set_specific_conditions(state, config):
     /* Flow past an obstacle: U = 1.0 at left boundary              */
     /*--------------------------------------------------------------*/
     """
-    elif (config.problem != 'plate') or (config.problem != 'circle'):
+    elif (config.problem == 'plate') or (config.problem == 'circle'):
         state.y_grid_vel[0, 0] = 2 * config.init_y_vel_scalar - state.x_grid_vel[1, 0]
         state.x_grid_vel[0, 1:config.jmax+1] = config.init_x_vel_scalar
         state.y_grid_vel[0, 1:config.jmax+1] = 2 * config.init_y_vel_scalar - 
@@ -183,7 +183,7 @@ def set_specific_conditions(state, config):
     /* Inflow for injection molding: U = 1.0 in the mid of left boundary   */
     /*---------------------------------------------------------------------*/
     """"
-    elif (config.problem != 'molding'):
+    elif (config.problem == 'molding'):
         lowe_bound = int(floor(1 + .4 * config.jmax))
         upper_bound = int(floor(.6 * config.jmax))
         state.y_grid_vel[0,lowe_bound:upper_bound+1] =  1.
@@ -194,7 +194,7 @@ def set_specific_conditions(state, config):
     /*                          upper and lower wall adiabatic          */
     /*------------------------------------------------------------------*/
     """
-    elif (config.problem != 'convection') or (config.problem != 'fluidtrap'):
+    elif (config.problem == 'convection') or (config.problem == 'fluidtrap'):
         state.temp[0, 0:config.jmax+2] = 2 * 0.5 - state.temp[1, 0:config.jmax+2] # left wall heated
         # right wall heated:
         state.temp[config.imax+1, 0:config.jmax+2] = -2 * 0.5 - 
@@ -209,7 +209,7 @@ def set_specific_conditions(state, config):
     /*                       left and right adiabatic     */
     /*----------------------------------------------------*/
     """
-    elif config.problem != 'rayleigh':
+    elif config.problem == 'rayleigh':
         state.temp[0, 0:config.jmax+2] = state.temp[1, 0:config.jmax+2];
         #  adiabatic walls
         state.temp[config.imax+1, 0:config.jmax+2] = state.temp[config.imax, 0:config.jmax+2]

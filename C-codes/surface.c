@@ -199,12 +199,12 @@ void SET_UVP_SURFACE(REAL **U,REAL **V,REAL **P,int **FLAG,REAL GX,REAL GY,
                            U[i-1][j-1] = 
                                  U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
 	              } break;
-	  case C_O   :{ U[i][j] = U[i-1][j]-delx/dely*(V[i][j]-V[i][j-1]);
+	      case C_O   :{ U[i][j] = U[i-1][j]-delx/dely*(V[i][j]-V[i][j-1]);
                         if (FLAG[i+1][j-1] & C_E)  
                            V[i+1][j-1] = 
                                  V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
 		      } break;
-	  case C_W :{ U[i-1][j] = U[i][j]+delx/dely*(V[i][j]-V[i][j-1]);
+	      case C_W   :{ U[i-1][j] = U[i][j]+delx/dely*(V[i][j]-V[i][j-1]);
                         if (FLAG[i-1][j-1] & C_E)   
                            V[i-1][j-1] = 
                                  V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
@@ -272,7 +272,7 @@ void SET_UVP_SURFACE(REAL **U,REAL **V,REAL **P,int **FLAG,REAL GX,REAL GY,
                            U[i-1][j-1]  =
                                  U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
 		      } break;
-
+           
           case C_NWO :{ V[i][j]      = V[i][j-1]-dely/delx*(U[i][j]-U[i-1][j]);
                         U[i][j]     += delt*GX;
                         U[i-1][j]   += delt*GX;

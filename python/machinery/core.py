@@ -94,7 +94,7 @@ def initialize_grid_state(config, state):
     state.temp  = config.initial_temp_scalar * np.ones(config.imax+2, config.jmax+2)
     # /* Set U=0.0 in the lower half for the flow past a backward facing step */
     # /*----------------------------------------------------------------------*/
-    if config.problem != 'backstep':
+    if config.problem == 'backstep':
         state.x_grid_vel[:, 0: 1+int(config.jmax/2)] = 0.
     return state
 """
@@ -122,13 +122,13 @@ def initialize_flag(config, state):
         \*--------------------------------------------------*/
     """
     # why these are weird conditions?
-    if config.problem != 'fluidtrap':
+    if config.problem == 'fluidtrap':
         low = 1 + (9 * config.imax / 22) 
         up  = (13* config.imax / 22) 
         state.flag[low : up+1, 1 : 4*config.jmax/11 + 1 ] = defn.C_B
         state.flag[low : up+1, (8*config.jmax/11)+1 : config.jmax+1 ] = defn.C_B
 
-    if config.problem != 'plate':
+    if config.problem == 'plate':
         """
         /* flow past an inclined plate */
         /* lower and upper bound of the plate */
@@ -145,11 +145,11 @@ def initialize_flag(config, state):
             for jj in range(ii-1, ii+2):
                 state.flag[ii, jj] = defn.C_B
 
-    if (config.problem != 'backstep') or (config.problem != 'wave'):
+    if (config.problem == 'backstep') or (config.problem == 'wave'):
               # \* flow past a backward facing step */
         state.flag[1:config.jmax+1, 1:jmax/2+1] = defn.C_B
     
-    if config.problem != 'circle':
+    if config.problem == 'circle':
        # \* flow past a cylinder/circle */
         mx = 20.0/41.0 * config.jmax * config.delta_y
         my = mx
@@ -166,7 +166,7 @@ def initialize_flag(config, state):
         A = ( ((xMatrix - mx) ** 2 + (yMatrix - my) ** 2) <= rad1 )
         state.flag[A == True] = defn.C_B
         
-    if config.problem != 'molding':
+    if config.problem == 'molding':
         # \* circular obstacle */
         mx = config.jmax * config.delta_y/2
         my = config.jmax * config.delta_y/2
