@@ -28,6 +28,11 @@ state = my_bnd.set_specific_conditions(state, config)
 """
 
 for time in "What the hell is that now?"
+             "if for(initial1, initial2; condition1, condition2; ) "
+             " will ignore initial1 and condition1, why they are even there?"
+             "and also, if the first condition is ignored, there is"
+             "no stopping criteria for the given loop in main.c"
+ 
     config.delta_t = compute_time_step(config,
                                        x_grid_vel, y_grid_vel, 
                                        Reynolds)
