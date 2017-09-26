@@ -60,23 +60,22 @@ def set_boun_cond(state, config):
 	state.temp[:, 0] = state.temp[:, 1]
 
 	if config.wS == 1:
-		state.y_grid_vel[:, 0] = 0.0
-		state.x_grid_vel[:, 0] = state.x_grid_vel[:, 1]
+        state.y_grid_vel[:, 0] = 0.0
+        state.x_grid_vel[:, 0] = state.x_grid_vel[:, 1]
 	elif config.wS == 2:
-		state.y_grid_vel[:, 0] = 0.0
-		state.x_grid_vel[:, 0] = -state.x_grid_vel[:, 1]
+        state.y_grid_vel[:, 0] = 0.0
+        state.x_grid_vel[:, 0] = -state.x_grid_vel[:, 1]
 	elif config.wS == 3:
-		state.y_grid_vel[:, 0] = state.y_grid_vel[:, 1]
-		state.x_grid_vel[:, 0] = state.x_grid_vel[:, 1]
+        state.y_grid_vel[:, 0] = state.y_grid_vel[:, 1]
+        state.x_grid_vel[:, 0] = state.x_grid_vel[:, 1]
 	elif config.wS == 4:
-		state.y_grid_vel[:, 0] = state.y_grid_vel[:, config.jmax-1]
-		state.x_grid_vel[:, 0] = state.x_grid_vel[:, config.jmax-1]
-		state.x_grid_vel[:, 1] = state.x_grid_vel[:, config.jmax]
-		state.pressures[:, 1] = state.pressures[:, config.jmax]
-	state.temp[:, config.jmax+1] = state.temp[:, config.jmax]
-    #  /* setting the boundary values at inner obstacle cells */
-    #  /*                  (only no-slip)                     */
-    #  /*-----------------------------------------------------*/
+        state.y_grid_vel[:, 0] = state.y_grid_vel[:, config.jmax-1]
+        state.x_grid_vel[:, 0] = state.x_grid_vel[:, config.jmax-1]
+        state.x_grid_vel[:, 1] = state.x_grid_vel[:, config.jmax]
+        state.pressures[:, 1] = state.pressures[:, config.jmax]
+    state.temp[:, config.jmax+1] = state.temp[:, config.jmax]
+    # setting the boundary values of inner obstacle cells
+    #                   (only no-slip)                     
     for ii in xrange(0, imax+1):
         for jj in xrange(0, jmax+1):
             if (flag[ii, jj] and 0x000f): # /* The mask 0x000f filters the */
