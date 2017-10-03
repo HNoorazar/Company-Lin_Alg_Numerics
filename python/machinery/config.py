@@ -6,8 +6,8 @@ class staticParameters:
         # Geometry data
         self.xlength = 0. # domain size in x direction
         self.ylength = 0. # domain size in y direction
-        self.imax = 0 # number of interior cells in x-direction
-        self.jmax = 0 # number of interior cells in y-direction
+        self.imax = 0     # number of interior cells in x-direction
+        self.jmax = 0     # number of interior cells in y-direction
         self.delta_x = 0. # length delta_x of one cell in x-direction
         self.delta_y = 0. # length delta_x of one cell in y-direction
 
