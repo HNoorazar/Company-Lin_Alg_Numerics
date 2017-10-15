@@ -1,3 +1,20 @@
+import os
+import configparser
+import argparse
+
+class CmdLineArguments:
+    def __init__(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-c", "--config", help = "configuration file.")
+        self.args = parser.parse_args()
+
+    def printOut(self):
+        print("================")
+        print("CmdLineArguments")
+        print("================")
+        print(str(self.args))
+        print("")
+
 class staticParameters:
     def __init__(self):
         """
