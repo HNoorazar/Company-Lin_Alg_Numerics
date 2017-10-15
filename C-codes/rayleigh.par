@@ -42,7 +42,7 @@ none        	file to write particle positions of streaklines
 -0.6432		GY: volume forces, e.g. gravity
 0.0		UI:
 0.0		VI: initial values
-0.0             TI:
+0.0     TI:
 
 2		wW: flags for boundary conditions
 2		wO:   1 = slip         3 = inflow/outflow

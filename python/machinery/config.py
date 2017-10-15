@@ -25,9 +25,10 @@ class staticParameters:
         self.gamma = 0. # upwind differencing factor \gamma
 
         # Problem dependent data
-        self.init_x_vel_scalar = 0. 
-        self.init_y_vel_scalar = 0. 
-        self.init_press_scalar = 0. 
+        self.init_x_vel_scalar = 0.
+        self.init_y_vel_scalar = 0.
+        self.init_press_scalar = 0.
+        self.init_temp_scalar  = 0.
         self.Ray_no = 0.
         self.wW = 0
         self.wE = 0
@@ -155,7 +156,7 @@ class staticParameters:
         self.init_x_vel_scalar = config.getfloat('parameters', init_x_vel_scalar) # 34
         self.init_y_vel_scalar = config.getfloat('parameters', init_y_vel_scalar) # 35
         self.init_press_scalar = config.getfloat('parameters', init_press_scalar) # 36
-        self.init_temp_scalar = config.getfloat('parameters', init_temp_scalar) # 37
+        self.init_temp_scalar  = config.getfloat('parameters', init_temp_scalar) # 37
         self.wW = config.getint('parameters', wW) # 38
         self.wE = config.getint('parameters', wE) # 39
         self.wN = config.getint('parameters', wN) # 40
