@@ -480,7 +480,7 @@ def POISSON(config, state, RHS, press_residual, ifull):
     p0 = 0.
     rdx2 = 1./(config.delta_x ** 2)
     rdy2 = 1./(config.delta_y ** 2)
-    beta_2 = -config.relax_param / (2.0 * (rdx2 + rdy2))
+    beta_2 = -config.omg / (2.0 * (rdx2 + rdy2))
     # Can be vectorized:
     for ii in xrange(1, config.imax+1):
         for jj in xrange(1, config.jmax+1):
@@ -505,7 +505,7 @@ def POISSON(config, state, RHS, press_residual, ifull):
                 for jj in xrange(1, config.jmax+1):
                     # /* five point star for interior fluid cells */
                     if (state.flag[ii, jj] == 0x001f):
-                        state.pressures[ii, jj] = (1.-config.relax_param)*state.pressures[ii, jj] - 
+                        state.pressures[ii, jj] = (1.-config.omg)*state.pressures[ii, jj] - 
                                                   beta_2 * 
                                                   (
                                                    (state.pressures[ii+1, jj] + 
@@ -516,10 +516,10 @@ def POISSON(config, state, RHS, press_residual, ifull):
                                                   )
                     # /* modified star near boundary */
                     elif ((state.flag[ii, jj] & C_F) and (state.flag[ii, jj] < 0x0100)):
-                        beta_mod = -config.relax_param/((defn.eps_E + defn.eps_W) * rdx2 + 
+                        beta_mod = -config.omg/((defn.eps_E + defn.eps_W) * rdx2 + 
                                     (defn.eps_N + defn.eps_S) * rdy2)
                         
-                        state.pressures[ii, jj] = (1. - config.relax_param) * state.pressures[ii, jj] -
+                        state.pressures[ii, jj] = (1. - config.omg) * state.pressures[ii, jj] -
                                                   beta_mod * ( (eps_E * state.pressures[ii+1, jj] + 
                                                   defn.eps_W * state.pressures[ii-1, jj]) * rdx2 +
                                                   (defn.eps_N * state.pressures[ii, jj+1] + 

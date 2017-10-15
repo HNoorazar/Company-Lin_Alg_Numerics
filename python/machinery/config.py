@@ -25,28 +25,44 @@ class staticParameters:
         self.ylength = 0. # domain size in y direction
         self.imax = 0     # number of interior cells in x-direction
         self.jmax = 0     # number of interior cells in y-direction
-        self.delta_x = 0. # length delta_x of one cell in x-direction
-        self.delta_y = 0. # length delta_x of one cell in y-direction
+        # The two following can and will be computed by above parameters.
+        # I am commenting them out to modify this file so that it goes with
+        # &&&_input.cfg files.
+#        self.delta_x = 0. # length delta_x of one cell in x-direction
+#        self.delta_y = 0. # length delta_x of one cell in y-direction
 
         # time criteria
         self.final_t = 0. # Final time
         self.deta_t = 0. # time step size
         self.safety_tau = 0. # Safety factor for time step size control \tau
+        
+        self.del_trace = 0. # del_trace: time stepsize for writing particle positions for particle tracing
+        self.del_inj   = 0. # del_inj:   time stepsize for injecting particles
+        self.del_streak= 0. # del_streak:time stepsize for writing particle positions of streaklines
+        self.del_vec   = 0. # del_vec:   time stepsize for writing velocity and pressure values
+        
+        self.N = 0         # N: number of particlelines
+        self.pos1x = 0.0   # pos1x: coordinates of the final points
+        self.pos1y = 0.0   # pos1y: of the line on which
+        self.pos2x = 0.0   # pos2x: particles for particle tracing
+        self.pos2y = 0.0   # pos2y: and streaklines are injected
 
         # Pressure-iteration data
         self.iteration_max = 0 # Maximal number of pressure iterations in one time step
         self.iteration_count = 0  # SOR iteration counter [Do we need to remove this?]
-        self.res_norm = 0. # norm of pressure equation residual [Do we need to remove this?]
-        self.stop_toler = 0. # stopping tolerance eps for pressure iteration
-        self.relax_param = 0. # relaxation parameter omega for SOR iteration
-        self.gamma = 0. # upwind differencing factor \gamma
+#        self.res_norm = 0.   # norm of pressure equation residual [Do we need to remove this?]
+        self.eps = 0.         # stopping tolerance eps for pressure iteration
+        self.omg = 0.         # relaxation parameter omega for SOR iteration
+        self.gamma = 0.       # upwind differencing factor \gamma
 
         # Problem dependent data
+        self.Ray_no = 0.
+        self.Pr = 0.
         self.init_x_vel_scalar = 0.
         self.init_y_vel_scalar = 0.
         self.init_press_scalar = 0.
         self.init_temp_scalar  = 0.
-        self.Ray_no = 0.
+        
         self.wW = 0
         self.wE = 0
         self.wN = 0
@@ -90,8 +106,8 @@ class staticParameters:
 
         print ("Pressure Iteration Data")
         print ("Maximal No. of pressure iterations in one time step = " + str(self.iteration_max))
-        print ("stopping tolerance for pressure iteration           = " + str(self.stop_toler))  # epsilon
-        print ("relaxation parameter omega for SOR iteration        = " + str(self.relax_param)) # omega
+        print ("stopping tolerance for pressure iteration           = " + str(self.eps))  # epsilon
+        print ("relaxation parameter omega for SOR iteration        = " + str(self.omg)) # omega
         print ("gamma   = " + str(self.gamma))
         print ("p_bound = " + str(self.p_bound))
         print ("Reynolds number = " + str(self.Ray_no))
@@ -120,8 +136,8 @@ class staticParameters:
         config.set('parameters', 'iteration_max', self.iteration_max)     # 11
         config.set('parameters', 'iteration_count', self.iteration_count) # 12
         config.set('parameters', 'res_norm', self.res_norm)       # 13
-        config.set('parameters', 'stop_toler', self.stop_toler)   # 14
-        config.set('parameters', 'relax_param', self.relax_param) # 15
+        config.set('parameters', 'eps', self.eps) # 14
+        config.set('parameters', 'omg', self.omg) # 15
         config.set('parameters', 'gamma', self.gamma) # 16
 
 
@@ -158,8 +174,8 @@ class staticParameters:
         self.pos2x = config.getfloat('parameters', 'pos2x') # 23
         self.pos2y = config.getfloat('parameters', 'pos2y') # 24
         self.iteration_max = config.getint('parameters', 'iteration_max') # 25
-        self.stop_toler = config.getfloat('parameters', 'stop_toler') # This is epsilon in C++
-        self.relax_param = config.getfloat('parameters', 'relax_param') # This is omega in C++
+        self.eps = config.getfloat('parameters', 'eps') # This is epsilon in C++
+        self.omg = config.getfloat('parameters', 'omg') # This is omega in C++
         self.gamma = config.getfloat('parameters', 'gamma')     # 26 This is upwind differencing parameter.
         self.p_bound = config.getint('parameters', 'p_bound')   # 27
         # What is res_norm? It is not in the init.c reading file. 
