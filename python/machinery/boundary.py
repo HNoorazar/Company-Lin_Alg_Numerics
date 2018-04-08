@@ -161,7 +161,7 @@ def set_specific_conditions(state, config):
     /* Flow past a backward facing step, with or without free boundary */
     /*                  U = 1.0 at the left boundary                   */
     /*-----------------------------------------------------------------*/
-    """"
+    """
     elif (config.problem == 'backstep') or (config.problem == 'wave'):
         for col_count in xrange(1 + config.jmax/2 , config.jmax+1):
             state.x_grid_vel[0, col_count] = 1.
@@ -181,7 +181,7 @@ def set_specific_conditions(state, config):
     /*---------------------------------------------------------------------*/
     /* Inflow for injection molding: U = 1.0 in the mid of left boundary   */
     /*---------------------------------------------------------------------*/
-    """"
+    """
     elif (config.problem == 'molding'):
         lowe_bound = int(floor(1 + .4 * config.jmax))
         upper_bound = int(floor(.6 * config.jmax))

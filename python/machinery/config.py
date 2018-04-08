@@ -33,7 +33,7 @@ class staticParameters:
 
         # time criteria
         self.final_t = 0. # Final time
-        self.deta_t = 0. # time step size
+        self.delta_t = 0.  # time step size
         self.safety_tau = 0. # Safety factor for time step size control \tau
         
         self.del_trace = 0. # del_trace: time stepsize for writing particle positions for particle tracing
@@ -58,6 +58,9 @@ class staticParameters:
         # Problem dependent data
         self.Ray_no = 0.
         self.Pr = 0.
+        self.beta = 0.
+        self.GX = 0.
+        self.GY = 0.
         self.init_x_vel_scalar = 0.
         self.init_y_vel_scalar = 0.
         self.init_press_scalar = 0.
@@ -83,7 +86,7 @@ class staticParameters:
 
         print ("Time Criteria")        
         print("Final Time     = "+str(self.final_t))
-        print("Time Step Size = "+str(self.deta_t))
+        print("Time Step Size = "+str(self.delta_t))
         print("Safety Factor  = "+str(self.safety_tau))
         
         print("del_trace  = "+str(self.del_trace))
@@ -131,7 +134,7 @@ class staticParameters:
         config.set('parameters', 'delta_y', self.delta_y) # 6
         config.set('parameters', 'current_time', self.current_time) # 7
         config.set('parameters', 'final_t', self.final_t) # 8
-        config.set('parameters', 'deta_t', self.deta_t)   # 9
+        config.set('parameters', 'delta_t', self.delta_t)   # 9
         config.set('parameters', 'safety_tau', self.safety_tau) # 10
         config.set('parameters', 'iteration_max', self.iteration_max)     # 11
         config.set('parameters', 'iteration_count', self.iteration_count) # 12
@@ -156,8 +159,8 @@ class staticParameters:
         # These can be computed by division of xlength by imax!
         self.delta_x = config.getfloat('parameters', 'xlength') / config.getfloat('parameters', 'imax') # 6 
         self.delta_y = config.getfloat('parameters', 'ylength') / config.getfloat('parameters', 'jmax') # 7
-        self.final_t = config.getint('parameters', 'final_t') # 8
-        self.deta_t = config.getint('parameters', 'deta_t')   # 9
+        self.final_t = config.getint('parameters', 'final_t')   # 8
+        self.delta_t = config.getint('parameters', 'delta_t')   # 9
         self.safety_tau = config.getint('parameters', 'safety_tau') # 10
         self.del_trace = config.getfloat('parameters', 'del_trace') # 11
         self.del_inj = config.getfloat('parameters', 'del_inj')     # 12

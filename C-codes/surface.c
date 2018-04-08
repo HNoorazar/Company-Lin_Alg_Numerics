@@ -191,184 +191,179 @@ void SET_UVP_SURFACE(REAL **U,REAL **V,REAL **P,int **FLAG,REAL GX,REAL GY,
 	                              /* filters surface cells */
           case C_N   :{ V[i][j] = V[i][j-1]-dely/delx*(U[i][j]-U[i-1][j]);
                         if (FLAG[i-1][j+1] & C_E) 
-                          U[i-1][j+1] = 
-                                U[i-1][j]-dely/delx*(V[i][j]-V[i-1][j]);
+                          U[i-1][j+1] = U[i-1][j]-dely/delx*(V[i][j]-V[i-1][j]);
                       } break;
+          
           case C_S   :{ V[i][j-1] = V[i][j]+dely/delx*(U[i][j]-U[i-1][j]);
                         if (FLAG[i-1][j-1] & C_E)  
-                           U[i-1][j-1] = 
-                                 U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
-	              } break;
-	      case C_O   :{ U[i][j] = U[i-1][j]-delx/dely*(V[i][j]-V[i][j-1]);
+                           U[i-1][j-1] = U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
+	                    } break;
+	      
+          case C_O   :{ U[i][j] = U[i-1][j]-delx/dely*(V[i][j]-V[i][j-1]);
+                        
                         if (FLAG[i+1][j-1] & C_E)  
-                           V[i+1][j-1] = 
-                                 V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
-		      } break;
-	      case C_W   :{ U[i-1][j] = U[i][j]+delx/dely*(V[i][j]-V[i][j-1]);
+                           V[i+1][j-1] = V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
+		                  } break;
+	      
+          case C_W   :{ U[i-1][j] = U[i][j]+delx/dely*(V[i][j]-V[i][j-1]);
                         if (FLAG[i-1][j-1] & C_E)   
-                           V[i-1][j-1] = 
-                                 V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
-		      } break;
+                           V[i-1][j-1] = V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
+		                  } break;
 
           case C_NO  :{ U[i][j]     = U[i-1][j];
                         V[i][j]     = V[i][j-1];
                         if (FLAG[i-1][j+1] & C_E)
-                           U[i-1][j+1] = 
-                                 U[i-1][j]-dely/delx*(V[i][j]-V[i-1][j]);
+                           U[i-1][j+1] = U[i-1][j]-dely/delx*(V[i][j]-V[i-1][j]);
+
                         if (FLAG[i+1][j+1] & C_E)
-			  {
-                           U[i][j+1]   = U[i][j];
-                           V[i+1][j]   = V[i][j];
-			  }
+			                   { U[i][j+1]   = U[i][j];
+                           V[i+1][j]   = V[i][j]; }
+                        
                         if (FLAG[i+1][j-1] & C_E)
-                           V[i+1][j-1] = 
-                                 V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
-		      } break;
+                           V[i+1][j-1] = V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
+		                  } break;
+
           case C_NW  :{ U[i-1][j]   = U[i][j];
                         V[i][j]     = V[i][j-1];
+                        
                         if (FLAG[i-1][j+1] & C_E)
-			  {
-                           U[i-1][j+1] = U[i-1][j];
-                           V[i-1][j]   = V[i][j];
-			  }
+			                  { U[i-1][j+1] = U[i-1][j]; 
+                          V[i-1][j]   = V[i][j];}
+                        
                         if (FLAG[i-1][j-1] & C_E)
-                           V[i-1][j-1] = 
-                                 V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
-		      } break;
+                           V[i-1][j-1] = V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
+		                  } break;
+          
           case C_SW  :{ U[i-1][j]   = U[i][j];
                         V[i][j-1]   = V[i][j];
+                        
                         if (FLAG[i-1][j-1] & C_E)
-			  {
-                           U[i-1][j-1] = U[i-1][j];
-                           V[i-1][j-1] = V[i][j-1];
-			  }
-		      } break;
+			                  { U[i-1][j-1] = U[i-1][j]; 
+                          V[i-1][j-1] = V[i][j-1];}
+		                  } break;
+          
           case C_SO  :{ U[i][j]     = U[i-1][j];
                         V[i][j-1]   = V[i][j];
+                        
                         if (FLAG[i-1][j-1] & C_E)
-                           U[i-1][j-1] = 
-                                 U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
+                           U[i-1][j-1] = U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
+                        
                         if (FLAG[i+1][j-1] & C_E)
-			  {
-                           U[i][j-1]   = U[i][j];
-                           V[i+1][j-1] = V[i][j-1];
-			  }
-		      } break;
+			                    { U[i][j-1]   = U[i][j]; 
+                            V[i+1][j-1] = V[i][j-1];}
+
+		                    } break;
+
           case C_WO  :{ U[i][j]     += delt*GX;
                         U[i-1][j]   += delt*GX;
+                        
                         if (FLAG[i-1][j-1] & C_E)
-                           V[i-1][j-1]  = 
-                                 V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
+                           V[i-1][j-1]  = V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
+                        
                         if (FLAG[i+1][j-1] & C_E)
-                           V[i+1][j-1]  =
-                                 V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
-		      } break;
+                           V[i+1][j-1]  = V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
+		                  } break;
+          
           case C_NS  :{ V[i][j]     += delt*GY;
                         V[i][j-1]   += delt*GY;
+                        
                         if (FLAG[i-1][j+1] & C_E)
-                           U[i-1][j+1]  = 
-                                 U[i-1][j]-dely/delx*(V[i][j]-V[i-1][j]);
+                           U[i-1][j+1]  = U[i-1][j]-dely/delx*(V[i][j]-V[i-1][j]);
+
                         if (FLAG[i-1][j-1] & C_E)
-                           U[i-1][j-1]  =
-                                 U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
-		      } break;
+                           U[i-1][j-1] = U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
+		                  } break;
            
           case C_NWO :{ V[i][j]      = V[i][j-1]-dely/delx*(U[i][j]-U[i-1][j]);
                         U[i][j]     += delt*GX;
                         U[i-1][j]   += delt*GX;
+                        
                         if (FLAG[i-1][j-1] & C_E)
-                           V[i-1][j-1]  =
-                                 V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
+                           V[i-1][j-1]  = V[i][j-1]+delx/dely*(U[i-1][j]-U[i-1][j-1]);
+                        
                         if (FLAG[i+1][j-1] & C_E)
-                           V[i+1][j-1]  =
-                                 V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
+                           V[i+1][j-1] = V[i][j-1]-delx/dely*(U[i][j]-U[i][j-1]);
+                        
                         if (FLAG[i-1][j+1] & C_E)
-			  {
-                           V[i-1][j]    = V[i][j];
-                           U[i-1][j+1]  = U[i-1][j];
-			  }
+			                    { V[i-1][j]    = V[i][j]; 
+                            U[i-1][j+1]  = U[i-1][j]; }
+                        
                         if (FLAG[i+1][j+1] & C_E)
-			  {
-                           V[i+1][j]    = V[i][j];
-                           U[i][j+1]    = U[i][j];    
-                          }                    
-		      } break;
+			                    { V[i+1][j]    = V[i][j]; 
+                            U[i][j+1]    = U[i][j];}
+
+		                  } break;
+
           case C_NSW :{ U[i-1][j]    = U[i][j]+delx/dely*(V[i][j]-V[i][j-1]);
                         V[i][j]     += delt*GY;
                         V[i][j-1]   += delt*GY;
+                        
                         if (FLAG[i-1][j-1] & C_E)
-			  {
-                           V[i-1][j-1]  = V[i][j-1];
-                           U[i-1][j-1]  = U[i-1][j];
-			  }
+			                    { V[i-1][j-1]  = V[i][j-1]; 
+                            U[i-1][j-1]  = U[i-1][j];}
+
                         if (FLAG[i-1][j+1] & C_E)
-			  {
-                           V[i-1][j]    = V[i][j];
-                           U[i-1][j+1]  = U[i-1][j];
-			  }
-		      } break;
+			                    { V[i-1][j]    = V[i][j]; 
+                            U[i-1][j+1]  = U[i-1][j];}
+		                  } break;
+
           case C_SWO :{ V[i][j-1]    = V[i][j]+dely/delx*(U[i][j]-U[i-1][j]);
                         U[i][j]     += delt*GX;
                         U[i-1][j]   += delt*GX;
+                        
                         if (FLAG[i-1][j-1] & C_E)
-			  {
-                           U[i-1][j-1]  = U[i-1][j];
-                           V[i-1][j-1]  = V[i][j-1];
-			  }
+                          { U[i-1][j-1]  = U[i-1][j]; 
+                            V[i-1][j-1]  = V[i][j-1];}
+
                         if (FLAG[i+1][j-1] & C_E)
-			  {
-                           U[i][j-1]    = U[i][j];
-                           V[i+1][j-1]  = V[i][j-1];
-			  }
-		      } break;
+			                    { U[i][j-1]    = U[i][j]; 
+                            V[i+1][j-1]  = V[i][j-1];}
+                      } break;
+
           case C_NSO :{ U[i][j]      = U[i-1][j]-delx/dely*(V[i][j]-V[i][j-1]);
                         V[i][j]     += delt*GY;
                         V[i][j-1]   += delt*GY;
+                        
                         if (FLAG[i-1][j+1] & C_E)
-                           U[i-1][j+1]  = 
-                                 U[i-1][j]-dely/delx*(V[i][j]-V[i-1][j]);
+                           U[i-1][j+1]  = U[i-1][j]-dely/delx*(V[i][j]-V[i-1][j]);
+
                         if (FLAG[i-1][j-1] & C_E)
-                           U[i-1][j-1]  = 
-                                 U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
+                          U[i-1][j-1]  = U[i-1][j]+dely/delx*(V[i][j-1]-V[i-1][j-1]);
+                        
                         if (FLAG[i+1][j-1] & C_E)
-			  {
-                           U[i][j-1]    = U[i][j];
-                           V[i+1][j-1]  = V[i][j-1];
-			  }
+			                     {U[i][j-1]   = U[i][j]; 
+                            V[i+1][j-1] = V[i][j-1];}
+
                         if (FLAG[i+1][j+1] & C_E)
-			  {
-                           U[i][j+1]    = U[i][j];
-                           V[i+1][j]    = V[i][j];
-			  }
-		      } break;
-          case C_NSWO:{ U[i][j]     += delt*GX;
-                        U[i-1][j]   += delt*GX;
-                        V[i][j]     += delt*GY;
-                        V[i][j-1]   += delt*GY;
+			                     { U[i][j+1] = U[i][j]; 
+                             V[i+1][j] = V[i][j];}
+		                  } break;
+
+          case C_NSWO:{ 
+                        U[i][j]   += delt*GX;
+                        U[i-1][j] += delt*GX;
+                        V[i][j]   += delt*GY;
+                        V[i][j-1] += delt*GY;
+                        
                         if (FLAG[i-1][j+1] & C_E)
-			  {
-                           U[i-1][j+1]  = U[i-1][j];
-                           V[i-1][j]    = V[i][j];
-			  }
+        			           { U[i-1][j+1]  = U[i-1][j];
+                           V[i-1][j]    = V[i][j];}
+                        
                         if (FLAG[i+1][j+1] & C_E)
-			  {
-                           U[i][j+1]    = U[i][j];
-                           V[i+1][j]    = V[i][j];
-			  }
+        			           { U[i][j+1]    = U[i][j];
+                           V[i+1][j]    = V[i][j];}
+                       
                         if (FLAG[i-1][j-1] & C_E)
-			  {
-                           U[i-1][j-1]  = U[i-1][j];
-                           V[i-1][j-1]  = V[i][j-1];
-			  }
+        			           { U[i-1][j-1]  = U[i-1][j];
+                           V[i-1][j-1]  = V[i][j-1];}
+                        
                         if (FLAG[i+1][j-1] & C_E)
-			  {
-                           U[i][j-1]    = U[i][j];
-                           V[i+1][j-1]  = V[i][j-1];
-			  }
-		      } break;
+        			           { U[i][j-1]    = U[i][j];
+                           V[i+1][j-1]  = V[i][j-1]; }
+		                  } break;
 	  default     : break;
 	 }
-      }
+ }
 
  /* Second loop for pressure boundary values */
  /*------------------------------------------*/
@@ -376,30 +371,35 @@ void SET_UVP_SURFACE(REAL **U,REAL **V,REAL **P,int **FLAG,REAL GX,REAL GY,
     for (i=1;i<=imax;i++)
       {
        if (! ((FLAG[i][j] & C_E) || (FLAG[i][j] < 0x0100 )))
-         switch (FLAG[i][j] & C_NSWO){  
-	  case C_N   : P[i][j] = 2./Re/dely*(V[i][j]-V[i][j-1]); break; 
-	  case C_S   : P[i][j] = 2./Re/dely*(V[i][j]-V[i][j-1]); break; 
-	  case C_O   : P[i][j] = 2./Re/delx*(U[i][j]-U[i-1][j]); break;
-	  case C_W   : P[i][j] = 2./Re/delx*(U[i][j]-U[i-1][j]); break;
+         switch (FLAG[i][j] & C_NSWO){
 
-          case C_NO  : P[i][j] = 1./Re/2.*
+         case C_N   : P[i][j] = 2./Re/dely*(V[i][j]-V[i][j-1]); break; 
+	       case C_S   : P[i][j] = 2./Re/dely*(V[i][j]-V[i][j-1]); break; 
+	       case C_O   : P[i][j] = 2./Re/delx*(U[i][j]-U[i-1][j]); break;
+	       case C_W   : P[i][j] = 2./Re/delx*(U[i][j]-U[i-1][j]); break;
+
+         case C_NO  : P[i][j] = 1./Re/2.*
                               ((U[i][j]+U[i-1][j]-U[i][j-1]-U[i-1][j-1])/dely+
                                (V[i][j]+V[i][j-1]-V[i-1][j]-V[i-1][j-1])/delx);
-                       break;          
+         break;          
+          
           case C_NW  : P[i][j] = -1./Re/2.*
                               ((U[i][j]+U[i-1][j]-U[i][j-1]-U[i-1][j-1])/dely+
                                (V[i+1][j]+V[i+1][j-1]-V[i][j]-V[i][j-1])/delx);
-                       break; 
+          break; 
+          
           case C_SW  :{ P[i][j] = 1./Re/2.*
                               ((U[i][j+1]+U[i-1][j+1]-U[i][j]-U[i-1][j])/dely+
                                (V[i+1][j]+V[i+1][j-1]-V[i][j]-V[i][j-1])/delx);
-		      }
-                       break; 
+		                  }
+          break; 
+          
           case C_SO  :{ P[i][j] = -1./Re/2.*
                               ((U[i][j+1]+U[i-1][j+1]-U[i][j]-U[i-1][j])/dely+
                                (V[i][j]+V[i][j-1]-V[i-1][j]-V[i-1][j-1])/delx);
-		      }
-                       break;
+		                  }
+          break;
+          
           case C_WO  : P[i][j] = 0.; break;
           case C_NS  : P[i][j] = 0.; break;
           case C_NWO : P[i][j] = 0.; break;
@@ -408,6 +408,6 @@ void SET_UVP_SURFACE(REAL **U,REAL **V,REAL **P,int **FLAG,REAL GX,REAL GY,
           case C_NSO : P[i][j] = 0.; break;
           case C_NSWO: P[i][j] = 0.; break;
           default    : break;
-	 }
+	                                     }
      }
 }

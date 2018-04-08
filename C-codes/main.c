@@ -32,16 +32,16 @@ int main(int argc, char *Inputfile[])
   /* READ the parameters of the problem.                */
   /* Stop if problem type or inputfile are not defined  */       
   /*----------------------------------------------------*/
-  if( READ_PARAMETER(Inputfile[1],problem,
+  if(READ_PARAMETER(Inputfile[1],problem,
                      &xlength, &ylength, &imax, &jmax, &delx, &dely,
-		     &t_end,&delt,&tau, 
+		                 &t_end, &delt, &tau, 
                      &del_trace, &del_inj, &del_streak, &del_vec,
                      vecfile, tracefile, streakfile,
                      infile, outfile,
                      &N, &pos1x, &pos1y, &pos2x, &pos2y,
-		     &itermax,&eps,&omg,&gamma,&p_bound,
-		     &Re,&Pr,&beta,&GX,&GY,&UI,&VI,&TI,
-		     &wW,&wE,&wN,&wS) != 0 ) return(1); 
+		                 &itermax, &eps, &omg, &gamma, &p_bound,
+		                 &Re, &Pr, &beta, &GX, &GY, &UI, &VI, &TI,
+		                 &wW, &wE, &wN, &wS) != 0 ) return(1); 
 
   /* Allocate memory for the arrays */
   /*--------------------------------*/
@@ -121,8 +121,9 @@ int main(int argc, char *Inputfile[])
       itersor = POISSON(P,RHS,FLAG,imax,jmax,delx,dely,
                         eps,itermax,omg,&res,ifull,p_bound);
 
-   printf("t_end= %1.5g, t= %1.3e, delt= %1.1e, iterations %3d, res: %e, F-cells: %d, S-cells: %d, B-cells: %d\n",
-                    t_end, t+delt, delt, itersor,res,ifull,isurf,ibound);  
+   printf("t_end= %1.5g, t= %1.3e, delt= %1.1e, iterations %3d, 
+           res: %e, F-cells: %d, S-cells: %d, B-cells: %d\n",
+           t_end, t+delt, delt, itersor, res, ifull, isurf, ibound);  
 
    /* Compute the new velocity field */
    /*--------------------------------*/

@@ -210,11 +210,11 @@ int READ_PARAMETER(char *Inputfile,
 }
 
 /*---------------------------------------------------------------*/
-/* Setting the initial values for U,V,P, and TEMP                 */
+/* Setting the initial values for U, V, P, and TEMP              */
 /*---------------------------------------------------------------*/
 void INIT_UVP(char *problem,
-              REAL **U,REAL **V,REAL **P,REAL **TEMP,int imax,int jmax,
-              REAL UI,REAL VI,REAL TI)
+              REAL **U,REAL **V,REAL **P,REAL **TEMP, int imax, int jmax,
+              REAL UI, REAL VI, REAL TI)
 {
   int i,j;
  /* loop through all cells */
@@ -238,7 +238,7 @@ void INIT_UVP(char *problem,
 /*----------------------------------------------------------------------*/
 /* Initializing the integer array FLAG, dependent of the problem type   */
 /*----------------------------------------------------------------------*/
-void INIT_FLAG(char *problem,int **FLAG,int imax,int jmax,REAL delx,REAL dely,
+void INIT_FLAG(char *problem,int **FLAG,int imax, int jmax, REAL delx,REAL dely,
                int *ibound)
 {
   int i,j;

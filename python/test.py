@@ -11,13 +11,13 @@ def createTent(center):
     return tent
 
 tent_func = createTent(.3)
-print tent_func(.1)
-print tent_func(.2)
+print (tent_func(.1))
+print (tent_func(.2))
 """
 v = np.arange(0,6)/10.
-print "sin(x)= ", sin(v)
-print "type", type(v)
-print "tent_func(v)", tent_func(v)
+print ("sin(x)= ", sin(v))
+print ("type", type(v))
+print ("tent_func(v)", tent_func(v))
 """
 
 class MyClass(object):
@@ -26,9 +26,9 @@ class MyClass(object):
          self.i = 345
 
 a = MyClass()
-print a.i
+print (a.i)
 345
-print MyClass.i
+print (MyClass.i)
 123
 
 
@@ -52,13 +52,13 @@ class SomeOtherClass:
        return cls(x)
 
 c = SomeOtherClass.foo(5)
-print c
+print (c)
 
 
 a = 1
 if a == 0x000f:
-   print "yes"
+   print ("yes")
 else:
-   print "no"
-print 0x000f
+   print ("no")
+print (0x000f)
 

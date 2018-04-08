@@ -107,7 +107,7 @@ def initialize_flag(config, state):
     """"
     /* boundary strip to C_B */
     /*-----------------------*/
-    """"
+    """
     state.flag[:, 0] = defn.C_B
     state.flag[:, config.jmax+1] = defn.C_B
     state.flag[0, 1:config.jmax+1] = defn.C_B
@@ -182,18 +182,18 @@ def initialize_flag(config, state):
         A = ( ((xMatrix - mx) ** 2 + (yMatrix - my) ** 2) <= (rad1**2) )
         state.flag[A == True] = defn.C_B
     # /* Printing the geometry of the fluid domain */
-    print "nGeometry of the fluid domain:\n\n"
-    print ""
-    print ""
+    print ("nGeometry of the fluid domain:\n\n")
+    print ("")
+    print ("")
     for jj in sorted(range(0, config.jmax+1), reverse=True):
         for ii in range(0,config.imax+1):
             if not (flag[ii, jj] & defn.C_F):
-                print "**"
+                print ("**")
             else:
-                print "  "
-        print "\n"
-    print "\n"
-    print "\n"
+                print ("  ")
+        print ("\n")
+    print ("\n")
+    print ("\n")
                   # \* flags for boundary cells */
     state.ibound = 0
     for ii in xrange(1, config.imax+1):
@@ -256,7 +256,7 @@ def compute_time_step(config,
         delta_t = config.safety_tau * 
                                   np.minimum(first_element, second_element, third_element)
     else:
-        delta_t = config.deta_t
+        delta_t = config.delta_t
     return delta_t    
     
 #                                  UVP.C 
