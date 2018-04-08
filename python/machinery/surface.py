@@ -188,7 +188,7 @@ def SET_UVP_SURFACE(config, state):
           if (state.flag[ii-1, jj-1] & defn.C_E):
             state.x_grid_vel[ii-1, jj-1] = state.x_grid_vel[ii-1, jj] + dydx * (state.y_grid_vel[ii, jj-1] - state.y_grid_vel[ii-1, jj-1])
 ################################################################################################
-        elif (expression == defn.C_NW0):
+        elif (expression == defn.C_NWO):
           state.y_grid_vel[ii, jj] = state.y_grid_vel[ii, jj-1] - dydx * (state.x_grid_vel[ii, jj] - state.x_grid_vel[ii-1, jj])
           state.x_grid_vel[ii, jj]   += config.delta_t * config.GX
           state.x_grid_vel[ii-1, jj] += config.delta_t * config.GX

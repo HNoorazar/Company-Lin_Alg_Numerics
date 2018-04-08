@@ -144,7 +144,7 @@ Again, this is not consistent with the book.
 Problem 5 has five input, the C++ code has nine!
 """
 def set_specific_conditions(state, config):
-    if problem == 'drop' or problem == 'dam':
+    if (problem == 'drop') or (problem == 'dam'):
      break
      """
      /*-----------------------------------------------------------*/
