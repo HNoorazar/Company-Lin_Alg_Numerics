@@ -62,6 +62,12 @@ def particleline(config, state, N, ppc, Particlelines):
                             state.y_grid_vel[ii, jj] = vstart
     return Particlelines
 
+
+"""
+----------------------------------------------------------------
+ Add particle to "Partline" at (x,y)                            
+----------------------------------------------------------------
+"""
 def set_part(my_class, x, y):
     # what the hell is at the beginning of the code?
     # the pointer *part, how do you pass that to the function,
@@ -73,14 +79,19 @@ def set_part(my_class, x, y):
     part.x = 
     
 
-
-
+"""
+---------------------------------------------------------------
+             Mark the cells of the fluid domain                            
+---------------------------------------------------------------
+"""
+def mark_cells(config, state):
+  
 
 
 """
-/*---------------------------------------------------------*/
-/* Set boundary values at free surface                     */
-/*---------------------------------------------------------*/
+   ---------------------------------------------------------
+   Set boundary values at free surface                     
+   ---------------------------------------------------------
 """
 def SET_UVP_SURFACE(config, state):
   # Set velocity values in empty cells to zero

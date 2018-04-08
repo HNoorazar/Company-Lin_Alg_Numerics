@@ -516,13 +516,18 @@ def POISSON(config, state, RHS, press_residual, ifull):
                                                   )
                     # /* modified star near boundary */
                     elif ((state.flag[ii, jj] & C_F) and (state.flag[ii, jj] < 0x0100)):
-                        beta_mod = -config.omg/((defn.eps_E + defn.eps_W) * rdx2 + 
-                                    (defn.eps_N + defn.eps_S) * rdy2)
+                        eps_E = !(state.flag[ii+1, jj] < defn.C_F)
+                        eps_W = !(state.flag[ii-1, jj] < defn.C_F)
+                        eps_N = !(state.flag[ii, jj+1] < defn.C_F)
+                        eps_S = !(state.flag[ii, jj-1] < defn.C_F)
+                        
+                        beta_mod = -config.omg/((eps_E + eps_W) * rdx2 + 
+                                    (eps_N + eps_S) * rdy2)
                         
                         state.pressures[ii, jj] = (1. - config.omg) * state.pressures[ii, jj] -
                                                   beta_mod * ( (eps_E * state.pressures[ii+1, jj] + 
-                                                  defn.eps_W * state.pressures[ii-1, jj]) * rdx2 +
-                                                  (defn.eps_N * state.pressures[ii, jj+1] + 
+                                                  eps_W * state.pressures[ii-1, jj]) * rdx2 +
+                                                  (eps_N * state.pressures[ii, jj+1] + 
                                                   eps_S * state.pressures[ii, jj-1]) * rdy2 -
                                                   RHS[ii, jj])
                 
@@ -542,10 +547,15 @@ def POISSON(config, state, RHS, press_residual, ifull):
                     for jj in xrange(1, config.jmax+1):
                         if ((state.flag[ii, jj] & C_F) and (state.flag[ii, jj] < 0x0100)):
                             # \* only fluid cells */
-                            add = (defn.eps_E * (state.pressures[ii+1, jj]-state.pressures[ii, jj]) - 
-                                   defn.eps_W * (state.pressures[ii, jj]-state.pressures[ii-1, jj])) * rdx2 +
-                                  (defn.eps_N * (state.pressures[ii, jj+1]-state.pressures[ii, jj]) -
-                                   defn.eps_S * (state.pressures[ii, jj]-P[ii, jj-1])) * rdy2 -  
+                            eps_E = !(state.flag[ii+1, jj] < C_F)
+                            eps_W = !(state.flag[ii-1, jj] < C_F)
+                            eps_N = !(state.flag[ii, jj+1] < C_F)
+                            eps_S = !(state.flag[ii, jj-1] < C_F)
+
+                            add = (eps_E * (state.pressures[ii+1, jj]-state.pressures[ii, jj]) - 
+                                   eps_W * (state.pressures[ii, jj]-state.pressures[ii-1, jj])) * rdx2 +
+                                  (eps_N * (state.pressures[ii, jj+1]-state.pressures[ii, jj]) -
+                                   eps_S * (state.pressures[ii, jj]-P[ii, jj-1])) * rdy2 -  
                                    RHS[ii, jj]
                             res += add**2
                 res = sqrt((res)/ifull)/p0

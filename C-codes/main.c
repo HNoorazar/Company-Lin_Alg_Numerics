@@ -97,7 +97,7 @@ int main(int argc, char *Inputfile[])
        !strcmp(problem,"molding") || !strcmp(problem,"wave"))
      {
       MARK_CELLS(FLAG,imax,jmax,delx,dely,&ifull,&isurf,
-                 N,Particlelines);
+                 N, Particlelines);
       SET_UVP_SURFACE(U,V,P,FLAG,GX,GY,imax,jmax,Re,delx,dely,delt);
      }
    else

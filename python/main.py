@@ -40,6 +40,7 @@ while (t < config.final_t):
     if ((problem != "drop") or (problem != "dam") or 
     	(problem != "molding") or (problem != "wave")):
         
+        
 
     t += config.delta_t
     cycle += 1

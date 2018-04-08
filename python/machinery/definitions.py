@@ -1,3 +1,5 @@
+
+
 class definition:
                    # /* Macros for the integer array FLAG      */
     C_B = 0x0000   # /* interior obstacle cells                */
@@ -32,7 +34,9 @@ class definition:
 
 # /* Macros for POISSON, denoting whether there is an obstacle cell */
 # /* adjacent to some direction                                     */
+"""
     eps_E !(flag[ii+1, jj] < C_F)
     eps_W !(flag[ii-1, jj] < C_F)
     eps_N !(flag[ii, jj+1] < C_F)
     eps_S !(flag[ii, jj-1] < C_F)
+"""
