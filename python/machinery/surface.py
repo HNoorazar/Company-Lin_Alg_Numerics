@@ -24,7 +24,7 @@ def particleline(config, state, N, ppc, Particlelines):
     mpx=0.
     mpy=0.
     vstart=0.
-          #  Initialization of some parameters
+          # Initialization of some parameters
     if (config.problem == 'dam'):
         N = 1
     if (config.problem == 'dam'):
@@ -85,7 +85,7 @@ def set_part(my_class, x, y):
 ---------------------------------------------------------------
 """
 def mark_cells(config, state):
-  
+
 
 
 """
